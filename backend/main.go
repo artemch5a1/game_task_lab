@@ -2,48 +2,27 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "example/web-service-gin/docs"
+	"example/web-service-gin/handlers"
 )
 
+// @title           Gin Swagger Example
 func main() {
 	r := gin.Default()
 
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	// Маршруты
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello Gin!",
-		})
-	})
-
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"status": "ok"})
-	})
-
-	// Пример с параметром
-	r.GET("/hello/:name", func(c *gin.Context) {
-		name := c.Param("name")
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello " + name + "!",
-		})
-	})
-
-	// Пример POST запроса
-	r.POST("/echo", func(c *gin.Context) {
-		var json struct {
-			Message string `json:"message" binding:"required"`
-		}
-
-		if err := c.ShouldBindJSON(&json); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, gin.H{
-			"echo": json.Message,
-		})
-	})
+	// Роуты
+	r.GET("/", handlers.RootHandler)
+	r.GET("/health", handlers.HealthHandler)
+	r.GET("/hello/:name", handlers.HelloHandler)
+	r.POST("/echo", handlers.EchoHandler)
 
 	// Запуск сервера
 	fmt.Println("Server starting on http://localhost:8080")
