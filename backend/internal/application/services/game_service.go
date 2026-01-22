@@ -6,6 +6,7 @@ import (
 	"example/web-service-gin/internal/application/abstraction/repository"
 	"example/web-service-gin/internal/application/dto"
 	"example/web-service-gin/internal/application/mapper"
+	"example/web-service-gin/internal/constants"
 	"math"
 	"time"
 
@@ -27,8 +28,7 @@ func NewGameService(repo repository.GameRepository) *GameService {
 func (s *GameService) CreateGame(ctx context.Context,
 	gameCreateDto dto.CreateGameDto) (*dto.GameDto, error) {
 
-	if err := s.validateGameData(
-		gameCreateDto); err != nil {
+	if err := s.validateGameData(gameCreateDto); err != nil {
 		return nil, err
 	}
 
@@ -116,7 +116,7 @@ func (s *GameService) DeleteGame(ctx context.Context,
 	}
 
 	if !exists {
-		return errors.New("game not found")
+		return errors.New(constants.ErrGameNotFound)
 	}
 
 	repoError = s.repo.Delete(ctx, gameID)
@@ -130,19 +130,19 @@ func (s *GameService) DeleteGame(ctx context.Context,
 
 func (s *GameService) validateUpdateData(gameDto dto.UpdateGameDto) error {
 	if gameDto.ID == uuid.Nil {
-		return errors.New("game ID is required")
+		return errors.New(constants.ErrGameIDRequired)
 	}
 
 	if gameDto.Title == "" || len(gameDto.Title) > 200 {
-		return errors.New("title must be between 1 and 200 characters")
+		return errors.New(constants.ErrValidationTitleLength)
 	}
 
 	if len(gameDto.Description) > 2000 {
-		return errors.New("description too long")
+		return errors.New(constants.ErrValidationDescription)
 	}
 
 	if gameDto.ReleaseDate.After(time.Now().AddDate(1, 0, 0)) {
-		return errors.New("release date too far in the future")
+		return errors.New(constants.ErrValidationReleaseDate)
 	}
 
 	return nil
@@ -150,7 +150,7 @@ func (s *GameService) validateUpdateData(gameDto dto.UpdateGameDto) error {
 
 func (s *GameService) validateGameID(gameID uuid.UUID) error {
 	if gameID == uuid.Nil {
-		return errors.New("game ID is required")
+		return errors.New(constants.ErrGameIDRequired)
 	}
 
 	return nil
@@ -158,15 +158,15 @@ func (s *GameService) validateGameID(gameID uuid.UUID) error {
 
 func (s *GameService) validateGameData(gameDto dto.CreateGameDto) error {
 	if gameDto.Title == "" || len(gameDto.Title) > 200 {
-		return errors.New("title must be between 1 and 200 characters")
+		return errors.New(constants.ErrValidationTitleLength)
 	}
 
 	if len(gameDto.Description) > 2000 {
-		return errors.New("description too long")
+		return errors.New(constants.ErrValidationDescription)
 	}
 
 	if gameDto.ReleaseDate.After(time.Now().AddDate(1, 0, 0)) {
-		return errors.New("release date too far in the future")
+		return errors.New(constants.ErrValidationReleaseDate)
 	}
 
 	return nil
