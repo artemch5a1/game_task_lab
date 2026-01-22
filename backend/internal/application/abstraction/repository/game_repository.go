@@ -2,9 +2,15 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"example/web-service-gin/internal/domain/model"
 
 	"github.com/google/uuid"
+)
+
+var (
+	ErrNotFound      = errors.New("game not found")
+	ErrAlreadyExists = errors.New("game already exists")
 )
 
 type GameRepository interface {
