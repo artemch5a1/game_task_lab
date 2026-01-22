@@ -1,8 +1,10 @@
+// internal/application/mapper/game_mapper.go
 package mapper
 
 import (
 	"errors"
 	"example/web-service-gin/internal/application/dto"
+	"example/web-service-gin/internal/constants"
 	"example/web-service-gin/internal/domain/aggregate"
 	"example/web-service-gin/internal/domain/model"
 )
@@ -57,7 +59,7 @@ func (m *GameMapper) ToGameDtoSlice(games []*model.Game) []*dto.GameDto {
 
 func (m *GameMapper) FromCreateGameDto(dto *dto.CreateGameDto) (*model.Game, error) {
 	if dto == nil {
-		return nil, errors.New("create game dto cannot be nil")
+		return nil, errors.New(constants.ErrInvalidData)
 	}
 
 	return model.NewGameWithValidate(
@@ -70,15 +72,15 @@ func (m *GameMapper) FromCreateGameDto(dto *dto.CreateGameDto) (*model.Game, err
 
 func (m *GameMapper) FromUpdateGameDto(game *model.Game, dto *dto.UpdateGameDto) error {
 	if game == nil {
-		return errors.New("game cannot be nil")
+		return errors.New(constants.ErrInvalidData)
 	}
 
 	if dto == nil {
-		return errors.New("update game dto cannot be nil")
+		return errors.New(constants.ErrInvalidData)
 	}
 
 	if game.ID != dto.ID {
-		return errors.New("game ID mismatch")
+		return errors.New(constants.ErrIDMismatch)
 	}
 
 	return game.UpdateGameWithValidate(
