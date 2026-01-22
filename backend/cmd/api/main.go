@@ -7,8 +7,8 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "example/web-service-gin/docs"
-	"example/web-service-gin/handlers"
+	_ "example/web-service-gin/internal/interfaces/docs"
+	"example/web-service-gin/internal/interfaces/handlers"
 )
 
 // @title           Gin Swagger Example
