@@ -3,13 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/gin-gonic/gin"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-
+	_ "example/web-service-gin/docs"
 	"example/web-service-gin/internal/application/services"
 	"example/web-service-gin/internal/infrastructure/persistence/inmemory"
-	_ "example/web-service-gin/internal/interfaces/docs"
 	"example/web-service-gin/internal/interfaces/http/handlers"
 	"example/web-service-gin/internal/interfaces/http/router"
 	"example/web-service-gin/internal/interfaces/http/server"
@@ -17,9 +13,6 @@ import (
 
 // @title           Gin Swagger Example
 func main() {
-	r := gin.Default()
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	gameRepo := inmemory.NewGameRepository()
 

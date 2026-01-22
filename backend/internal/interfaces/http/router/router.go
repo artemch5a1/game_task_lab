@@ -2,6 +2,8 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"example/web-service-gin/internal/interfaces/http/handlers"
 )
@@ -11,6 +13,8 @@ func NewRouter(gameHandler *handlers.GameHandler) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.POST("/games", gameHandler.CreateGame)
 	r.GET("/games", gameHandler.GetAllGames)
