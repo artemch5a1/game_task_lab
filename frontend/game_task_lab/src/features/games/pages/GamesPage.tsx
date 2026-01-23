@@ -22,6 +22,10 @@ export const GamesPage = () => {
               class="games-page-search-input"
               type="text"
               placeholder="Search games"
+              onInput={(e) => {
+                const searchString = e.target.value;
+                actions.filterGames(searchString);
+              }}
             />
           </div>
           <div class="games-page-toolbar-right">

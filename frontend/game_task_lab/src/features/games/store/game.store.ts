@@ -5,12 +5,14 @@ import { gameApi } from '../api/game.api';
 
 interface GameState {
     games: GameDto[];
+    data: GameDto[];
     isLoading: boolean;
     error: string | null;
 }
 
 const initialState: GameState = {
     games: [],
+    data:[],
     isLoading: false,
     error: null,
 };
@@ -21,6 +23,7 @@ export type GameStore = {
         loadGames: () => Promise<void>;
         createGame: (dto: CreateGameDto) => Promise<GameDto>;
         deleteGame: (id: string) => Promise<void>;
+        filterGames: (search: string) => Promise<void>
     };
 };
 
@@ -34,6 +37,7 @@ export const createGameStore  = () : GameStore => {
 
             try {
                 const games = await gameApi.getAllGames();
+                setState('data', games)
                 setState('games', games);
             } catch (error) {
                 console.error('[loadGames] error', error);
@@ -49,6 +53,7 @@ export const createGameStore  = () : GameStore => {
             try {
                 const newGame = await gameApi.createGame(dto);
                 setState('games', [...state.games, newGame]);
+                setState('games', [...state.data, newGame]);
                 return newGame;
             } catch (error) {
                 setState('error', error instanceof Error ? error.message : 'Failed to create game');
@@ -64,6 +69,7 @@ export const createGameStore  = () : GameStore => {
             try {
                 await gameApi.deleteGame(id);
                 setState('games', state.games.filter(game => game.id !== id));
+                setState('games', state.data.filter(game => game.id !== id));
             } catch (error) {
                 setState('error', error instanceof Error ? error.message : 'Failed to delete game');
                 throw error;
@@ -71,6 +77,15 @@ export const createGameStore  = () : GameStore => {
                 setState('isLoading', false);
             }
         },
+
+        async filterGames(search: string): Promise<void> {
+            const games = await gameApi.getAllGames();
+
+            const gamesFiltered = games.filter(game => game.title.includes(search));
+
+            setState('data', games)
+            setState('games', gamesFiltered);
+        }
     };
 
     return { state, actions };
