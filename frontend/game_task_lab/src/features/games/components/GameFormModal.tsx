@@ -8,7 +8,7 @@ interface GameFormModalProps {
   isOpen: boolean;
   game?: GameDto | null;
   onClose: () => void;
-  onSubmit: (dto: CreateGameDto | UpdateGameDto) => Promise<void>;
+  onSubmit: (dto: any) => Promise<void>;
   isLoading?: boolean;
   gameStore?: GameStore;
 }
