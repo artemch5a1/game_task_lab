@@ -1,5 +1,6 @@
 import { createSignal, Show, createEffect } from "solid-js";
 import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types";
+import type { GameStore } from "../store/game.store";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { FlatpickrInput } from "../../../shared/components/flatpickr/FlatpickrInput.tsx";
 
@@ -9,6 +10,7 @@ interface GameFormModalProps {
   onClose: () => void;
   onSubmit: (dto: CreateGameDto | UpdateGameDto) => Promise<void>;
   isLoading?: boolean;
+  gameStore?: GameStore; // Опциональный store для потребления ошибок
 }
 
 export const GameFormModal = (props: GameFormModalProps) => {
@@ -19,7 +21,18 @@ export const GameFormModal = (props: GameFormModalProps) => {
 
   createEffect(() => {
     if (props.isOpen) {
-      setError(null);
+      // Потребляем ошибку из store, если она есть (для локального отображения)
+      if (props.gameStore) {
+        const consumedError = props.gameStore.actions.consumeError();
+        if (consumedError) {
+          setError(consumedError);
+        } else {
+          setError(null);
+        }
+      } else {
+        setError(null);
+      }
+
       if (props.game) {
         setTitle(props.game.title);
         setDescription(props.game.description ?? "");
@@ -55,7 +68,13 @@ export const GameFormModal = (props: GameFormModalProps) => {
       await props.onSubmit(dto);
       props.onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Произошла ошибка при сохранении");
+      // Пытаемся получить ошибку из store, если он передан
+      if (props.gameStore) {
+        const consumedError = props.gameStore.actions.consumeError();
+        setError(consumedError || (err instanceof Error ? err.message : "Произошла ошибка при сохранении"));
+      } else {
+        setError(err instanceof Error ? err.message : "Произошла ошибка при сохранении");
+      }
     }
   };
 

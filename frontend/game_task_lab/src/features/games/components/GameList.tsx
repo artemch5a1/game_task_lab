@@ -43,13 +43,16 @@ export const GameList = (gameStore: GameStore) => {
     },
   ];
   const closeErrorModal = () => {
-    gameStore.actions.setErrorNull();
+    gameStore.actions.clearError();
   };
+
+  // Показываем модальное окно ошибок только если ошибка есть и не была потреблена другими компонентами
+  const shouldShowErrorModal = () => state.error && !state.errorConsumed;
 
   return (
     <div class="game-list-container">
       <Modal
-        isOpen={!!state.error}
+        isOpen={shouldShowErrorModal()}
         title="Ошибка"
         onClose={closeErrorModal}
         footer={

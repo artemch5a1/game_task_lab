@@ -47,9 +47,14 @@ export const GamesPage = () => {
 
   const handleDeleteConfirm = async () => {
     if (state.selectedGame) {
-      await actions.deleteGame(state.selectedGame.id);
-      actions.setSelectedGame(null);
-      setIsDeleteModalOpen(false);
+      try {
+        await actions.deleteGame(state.selectedGame.id);
+        actions.setSelectedGame(null);
+        setIsDeleteModalOpen(false);
+      } catch (error) {
+        // Ошибка будет показана в общем модальном окне ошибок в GameList
+        // Модальное окно удаления остается открытым, чтобы пользователь мог увидеть ошибку
+      }
     }
   };
 
@@ -121,17 +126,25 @@ export const GamesPage = () => {
 
       <GameFormModal
         isOpen={isCreateModalOpen()}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          actions.clearError();
+          setIsCreateModalOpen(false);
+        }}
         onSubmit={handleCreate}
         isLoading={state.isLoading}
+        gameStore={gameStore}
       />
 
       <GameFormModal
         isOpen={isEditModalOpen()}
         game={state.selectedGame}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => {
+          actions.clearError();
+          setIsEditModalOpen(false);
+        }}
         onSubmit={handleUpdate}
         isLoading={state.isLoading}
+        gameStore={gameStore}
       />
 
       <Modal

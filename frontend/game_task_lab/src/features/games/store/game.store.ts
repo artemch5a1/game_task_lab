@@ -8,6 +8,7 @@ interface GameState {
     data: GameDto[];
     isLoading: boolean;
     error: string | null;
+    errorConsumed: boolean; // Флаг, указывающий что ошибка была "потреблена" UI компонентом
     selectedGame: GameDto | null;
 }
 
@@ -16,6 +17,7 @@ const initialState: GameState = {
     data:[],
     isLoading: false,
     error: null,
+    errorConsumed: false,
     selectedGame: null,
 };
 
@@ -27,7 +29,8 @@ export type GameStore = {
         updateGame: (id: string, dto: UpdateGameDto) => Promise<GameDto>;
         deleteGame: (id: string) => Promise<void>;
         filterGames: (search: string) => Promise<void>;
-        setErrorNull: () => Promise<void>;
+        clearError: () => void;
+        consumeError: () => string | null; // "Потребляет" ошибку - возвращает её и помечает как потребленную
         setSelectedGame: (game: GameDto | null) => void;
     };
 };
@@ -39,6 +42,7 @@ export const createGameStore  = () : GameStore => {
         async loadGames() {
             setState('isLoading', true);
             setState('error', null);
+            setState('errorConsumed', false);
 
             try {
                 const games = await gameApi.getAllGames();
@@ -47,6 +51,7 @@ export const createGameStore  = () : GameStore => {
             } catch (error) {
                 console.error('[loadGames] error', error);
                 setState('error', error instanceof Error ? error.message : 'Unknown error');
+                setState('errorConsumed', false);
             } finally {
                 setState('isLoading', false);
             }
@@ -54,7 +59,8 @@ export const createGameStore  = () : GameStore => {
 
         async createGame(dto: CreateGameDto) {
             setState('isLoading', true);
-            // Не устанавливаем error здесь, так как ошибки обрабатываются в модальном окне
+            setState('error', null);
+            setState('errorConsumed', false);
 
             try {
                 const newGame = await gameApi.createGame(dto);
@@ -62,7 +68,9 @@ export const createGameStore  = () : GameStore => {
                 setState('games', [...state.games, newGame]);
                 return newGame;
             } catch (error) {
-                // Пробрасываем ошибку для обработки в модальном окне
+                const errorMessage = error instanceof Error ? error.message : 'Failed to create game';
+                setState('error', errorMessage);
+                setState('errorConsumed', false);
                 throw error;
             } finally {
                 setState('isLoading', false);
@@ -71,7 +79,8 @@ export const createGameStore  = () : GameStore => {
 
         async updateGame(id: string, dto: UpdateGameDto) {
             setState('isLoading', true);
-            // Не устанавливаем error здесь, так как ошибки обрабатываются в модальном окне
+            setState('error', null);
+            setState('errorConsumed', false);
 
             try {
                 const updatedGame = await gameApi.updateGame(id, dto);
@@ -82,7 +91,9 @@ export const createGameStore  = () : GameStore => {
                 }
                 return updatedGame;
             } catch (error) {
-                // Пробрасываем ошибку для обработки в модальном окне
+                const errorMessage = error instanceof Error ? error.message : 'Failed to update game';
+                setState('error', errorMessage);
+                setState('errorConsumed', false);
                 throw error;
             } finally {
                 setState('isLoading', false);
@@ -91,6 +102,8 @@ export const createGameStore  = () : GameStore => {
 
         async deleteGame(id: string) {
             setState('isLoading', true);
+            setState('error', null);
+            setState('errorConsumed', false);
 
             try {
                 await gameApi.deleteGame(id);
@@ -100,7 +113,9 @@ export const createGameStore  = () : GameStore => {
                     setState('selectedGame', null);
                 }
             } catch (error) {
-                setState('error', error instanceof Error ? error.message : 'Failed to delete game');
+                const errorMessage = error instanceof Error ? error.message : 'Failed to delete game';
+                setState('error', errorMessage);
+                setState('errorConsumed', false);
                 throw error;
             } finally {
                 setState('isLoading', false);
@@ -115,9 +130,17 @@ export const createGameStore  = () : GameStore => {
             setState('data', games)
             setState('games', gamesFiltered);
         },
-        async setErrorNull(): Promise<void> {
-            setState('isLoading', false);
+        clearError() {
             setState('error', null);
+            setState('errorConsumed', false);
+        },
+
+        consumeError() {
+            const error = state.error;
+            if (error) {
+                setState('errorConsumed', true);
+            }
+            return error;
         },
 
         setSelectedGame(game: GameDto | null) {
