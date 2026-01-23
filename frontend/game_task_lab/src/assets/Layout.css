@@ -1,0 +1,284 @@
+:root {
+  --app-bg: #f5f7fb;
+  --app-sidebar-bg: #ffffff;
+  --app-sidebar-border: #e4e7f0;
+  --app-primary: #4b6fff;
+  --app-primary-soft: #edf2ff;
+  --app-text-main: #1a2240;
+  --app-text-muted: #8b90a5;
+  --app-border-subtle: #e5e7f3;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--app-bg);
+  color: var(--app-text-main);
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.app-sidebar {
+  background: var(--app-sidebar-bg);
+  border-right: 1px solid var(--app-sidebar-border);
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.app-sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 0.25rem 0.5rem;
+}
+
+.app-logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4b6fff, #8f5cff);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.app-logo-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.app-sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.app-sidebar-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-text-muted);
+  padding: 0 0.25rem;
+}
+
+.app-sidebar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.8rem;
+  color: var(--app-text-muted);
+  font-size: 0.9rem;
+  cursor: default;
+}
+
+.app-sidebar-item--sub {
+  padding-left: 1.9rem;
+}
+
+.app-sidebar-item--active {
+  background: var(--app-primary-soft);
+  color: var(--app-primary);
+  font-weight: 600;
+}
+
+.app-sidebar-icon {
+  width: 1.2rem;
+  text-align: center;
+}
+
+.app-sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-sidebar-footer-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.8rem;
+  border: none;
+  background: transparent;
+  color: var(--app-text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-topbar {
+  height: 64px;
+  padding: 0 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid var(--app-border-subtle);
+}
+
+.app-topbar-menu-button {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: none;
+}
+
+.app-topbar-search {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  background: #f2f4fb;
+}
+
+.app-topbar-search-icon {
+  font-size: 0.9rem;
+  color: var(--app-text-muted);
+}
+
+.app-topbar-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.app-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.app-topbar-icon-button {
+  position: relative;
+  border: none;
+  background: #f2f4fb;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.app-topbar-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #ff4b6b;
+  color: #ffffff;
+  font-size: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-topbar-language {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--app-text-muted);
+}
+
+.app-topbar-language-label {
+  font-weight: 500;
+}
+
+.app-topbar-language-caret {
+  font-size: 0.7rem;
+}
+
+.app-topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.app-topbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffaf64, #ff6b8b);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.app-topbar-user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.app-topbar-user-role {
+  font-size: 0.75rem;
+  color: var(--app-text-muted);
+}
+
+.app-content {
+  padding: 1.5rem 1.75rem 2rem;
+  min-height: 0;
+  overflow: auto;
+}
+
+@media (max-width: 960px) {
+  .app-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    display: none;
+  }
+
+  .app-topbar-menu-button {
+    display: inline-flex;
+  }
+}
+

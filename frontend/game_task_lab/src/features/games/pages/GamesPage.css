@@ -1,0 +1,137 @@
+.games-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.games-page-title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.games-page-main-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 0.5rem;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.games-page-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--app-border-subtle);
+}
+
+.games-page-toolbar-left {
+  flex: 1;
+}
+
+.games-page-search-input {
+  width: 90%;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--app-border-subtle);
+  font-size: 0.9rem;
+}
+
+.games-page-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.games-page-icon-button {
+  width: 100px;
+  border-radius: 999px;
+  border: 1px solid var(--app-border-subtle);
+  background: #f6f7fb;
+  cursor: pointer;
+  font-size: 0.9rem;
+  align-items: center;
+  color: black;
+}
+
+.games-page-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--app-border-subtle);
+  background: #f9fafb;
+}
+
+.games-page-action-button {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--app-border-subtle);
+  background: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.games-page-action-button:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.games-page-action-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.games-page-action-button--edit {
+  border-color: #4b6fff;
+  color: #4b6fff;
+}
+
+.games-page-action-button--edit:hover:not(:disabled) {
+  background: #edf2ff;
+}
+
+.games-page-action-button--delete {
+  border-color: #dc3545;
+  color: #dc3545;
+}
+
+.games-page-action-button--delete:hover:not(:disabled) {
+  background: #fee;
+}
+
+.games-page-list-wrapper {
+  padding: 0.5rem;
+}
+
+.games-page-create-button-container {
+  padding: 1rem;
+  border-top: 1px solid var(--app-border-subtle);
+  display: flex;
+  justify-content: center;
+}
+
+.games-page-create-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  border: none;
+  background: var(--app-primary);
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.games-page-create-button:hover:not(:disabled) {
+  background: #3b5ce8;
+}
+
+.games-page-create-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

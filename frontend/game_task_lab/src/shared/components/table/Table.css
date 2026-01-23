@@ -1,0 +1,87 @@
+.app-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.app-table thead {
+  background: #f5f7fb;
+}
+
+.app-table-header {
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.app-table-header--center {
+  text-align: center;
+}
+
+.app-table-header--right {
+  text-align: right;
+}
+
+.app-table-cell {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #f1f3f9;
+  color: #111827;
+}
+
+.app-table-cell--center {
+  text-align: center;
+}
+
+.app-table-cell--right {
+  text-align: right;
+}
+
+.app-table tr:hover td {
+  background: #f9fafb;
+}
+
+.app-table-row--selected td {
+  background: #edf2ff !important;
+  border-color: #4b6fff;
+}
+
+.app-table-row--selected:hover td {
+  background: #dbeafe !important;
+}
+
+.app-table-message {
+  padding: 1.5rem 0.75rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.app-table-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.app-table-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #4b6fff;
+  animation: app-table-spin 0.8s linear infinite;
+}
+
+@keyframes app-table-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
