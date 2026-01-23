@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   flexRender,
   type ColumnDef,
-  type Table as TanStackTable,
 } from "@tanstack/solid-table";
 import "./Table.css";
 
@@ -45,8 +44,8 @@ export const Table = <T extends Record<string, any>>(props: TableProps<T>) => {
     }))
   );
 
-  const table = createMemo(() =>
-    createSolidTable({
+  const table = createMemo(() => {
+    return createSolidTable({
       get data() {
         return props.data;
       },
@@ -54,8 +53,8 @@ export const Table = <T extends Record<string, any>>(props: TableProps<T>) => {
       getCoreRowModel: getCoreRowModel(),
       getRowId: props.getRowId || ((row: T) => (row as any).id?.toString() || ""),
       enableRowSelection: false,
-    })
-  );
+    });
+  });
 
   const colSpan = () => props.columns.length || 1;
 
@@ -119,7 +118,9 @@ export const Table = <T extends Record<string, any>>(props: TableProps<T>) => {
                 return (
                   <tr
                     class={isSelected() ? "app-table-row--selected" : ""}
-                    onClick={() => props.onRowClick?.(rowData)}
+                    onClick={() => {
+                      props.onRowClick?.(rowData);
+                    }}
                     style={{ cursor: props.onRowClick ? "pointer" : "default" }}
                   >
                     <For each={row.getVisibleCells()}>

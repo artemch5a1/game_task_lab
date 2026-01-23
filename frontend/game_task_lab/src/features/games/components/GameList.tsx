@@ -1,5 +1,5 @@
 // features/games/components/GameList.tsx
-import { createEffect } from "solid-js";
+import { onMount } from "solid-js";
 import {GameStore} from "../store/game.store";
 import { Table, type TableColumn } from "../../../shared/components/table/Table.tsx";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
@@ -23,7 +23,7 @@ const formatDate = (dateString: string): string => {
 export const GameList = (gameStore: GameStore) => {
   const { state, actions } = gameStore;
 
-  createEffect(() => {
+  onMount(() => {
     actions.loadGames();
   });
 
@@ -47,7 +47,7 @@ export const GameList = (gameStore: GameStore) => {
   };
 
   // Показываем модальное окно ошибок только если ошибка есть и не была потреблена другими компонентами
-  const shouldShowErrorModal = () => state.error && !state.errorConsumed;
+  const shouldShowErrorModal = () => !!(state.error && !state.errorConsumed);
 
   return (
     <div class="game-list-container">
@@ -84,7 +84,9 @@ export const GameList = (gameStore: GameStore) => {
         isLoading={state.isLoading}
         emptyText="Игры не найдены"
         selectedRowId={state.selectedGame?.id ?? null}
-        onRowClick={(game) => actions.setSelectedGame(game)}
+        onRowClick={(game) => {
+          actions.setSelectedGame(game);
+        }}
         getRowId={(game) => game.id}
       />
     </div>

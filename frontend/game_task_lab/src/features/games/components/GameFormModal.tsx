@@ -10,7 +10,7 @@ interface GameFormModalProps {
   onClose: () => void;
   onSubmit: (dto: CreateGameDto | UpdateGameDto) => Promise<void>;
   isLoading?: boolean;
-  gameStore?: GameStore; // Опциональный store для потребления ошибок
+  gameStore?: GameStore;
 }
 
 export const GameFormModal = (props: GameFormModalProps) => {
@@ -21,7 +21,6 @@ export const GameFormModal = (props: GameFormModalProps) => {
 
   createEffect(() => {
     if (props.isOpen) {
-      // Потребляем ошибку из store, если она есть (для локального отображения)
       if (props.gameStore) {
         const consumedError = props.gameStore.actions.consumeError();
         if (consumedError) {
@@ -54,8 +53,6 @@ export const GameFormModal = (props: GameFormModalProps) => {
     setError(null);
     
     try {
-      // Автоматически генерируем UUID для genreId только при создании новой игры
-      // При обновлении используем существующий genreId
       const genreId = props.game ? props.game.genreId : crypto.randomUUID();
       
       const dto: CreateGameDto | UpdateGameDto = {
@@ -68,7 +65,6 @@ export const GameFormModal = (props: GameFormModalProps) => {
       await props.onSubmit(dto);
       props.onClose();
     } catch (err) {
-      // Пытаемся получить ошибку из store, если он передан
       if (props.gameStore) {
         const consumedError = props.gameStore.actions.consumeError();
         setError(consumedError || (err instanceof Error ? err.message : "Произошла ошибка при сохранении"));

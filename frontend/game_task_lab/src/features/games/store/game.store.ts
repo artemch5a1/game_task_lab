@@ -8,7 +8,7 @@ interface GameState {
     data: GameDto[];
     isLoading: boolean;
     error: string | null;
-    errorConsumed: boolean; // Флаг, указывающий что ошибка была "потреблена" UI компонентом
+    errorConsumed: boolean;
     selectedGame: GameDto | null;
 }
 
@@ -144,7 +144,8 @@ export const createGameStore  = () : GameStore => {
         },
 
         setSelectedGame(game: GameDto | null) {
-            setState('selectedGame', game);
+            const gameCopy = game ? { ...game } : null;
+            setState('selectedGame', gameCopy);
         }
     };
 

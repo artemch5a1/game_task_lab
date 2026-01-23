@@ -3,7 +3,7 @@ import { GameList } from "../components/GameList";
 import { GameFormModal } from "../components/GameFormModal";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { gameStore } from "../store/game.store.ts";
-import { createEffect, createSignal, Show } from "solid-js";
+import { onMount, createSignal, Show } from "solid-js";
 import type { CreateGameDto, UpdateGameDto } from "../types/game.types";
 
 export const GamesPage = () => {
@@ -12,7 +12,7 @@ export const GamesPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = createSignal(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
 
-  createEffect(() => {
+  onMount(() => {
     actions.loadGames();
   });
 
@@ -33,7 +33,6 @@ export const GamesPage = () => {
         setIsEditModalOpen(false);
         actions.setSelectedGame(null);
       } catch (error) {
-        // Ошибка будет обработана в модальном окне
         throw error;
       }
     }
@@ -52,8 +51,6 @@ export const GamesPage = () => {
         actions.setSelectedGame(null);
         setIsDeleteModalOpen(false);
       } catch (error) {
-        // Ошибка будет показана в общем модальном окне ошибок в GameList
-        // Модальное окно удаления остается открытым, чтобы пользователь мог увидеть ошибку
       }
     }
   };
