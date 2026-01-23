@@ -8,10 +8,7 @@ export class GameApi {
         const { games } = this.config.endpoints;
         const url = ApiHelper.buildUrl(this.config.baseURL, games.list);
 
-        const response = await fetch(url, {
-            method: games.list.method,
-            headers: ApiHelper.getHeaders(games.list),
-        });
+        const response = await fetch(url);
 
         if (!response.ok) {
             throw new Error(`Failed to fetch games: ${response.statusText}`);

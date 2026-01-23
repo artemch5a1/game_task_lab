@@ -27,6 +27,7 @@ export const createGameStore = () => {
                 const games = await gameApi.getAllGames();
                 setState('games', games);
             } catch (error) {
+                console.error('[loadGames] error', error);
                 setState('error', error instanceof Error ? error.message : 'Unknown error');
             } finally {
                 setState('isLoading', false);
