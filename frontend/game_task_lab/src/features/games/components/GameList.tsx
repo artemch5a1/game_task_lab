@@ -1,7 +1,8 @@
 // features/games/components/GameList.tsx
-import { createEffect, Show } from "solid-js";
+import { createEffect } from "solid-js";
 import {GameStore} from "../store/game.store";
 import { Table, type TableColumn } from "../../../shared/components/table/Table.tsx";
+import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import "./GameList.css";
 
 const formatDate = (dateString: string): string => {
@@ -47,44 +48,32 @@ export const GameList = (gameStore: GameStore) => {
 
   return (
     <div class="game-list-container">
-      <Show when={state.error}>
-        <div class="modal-overlay">
-          <div class="modal">
-            <div class="modal-header">
-              <h3>Ошибка</h3>
-              <button
-                  class="modal-close"
-                  onClick={closeErrorModal}
-                  aria-label="Закрыть"
-              >
-                ×
-              </button>
-            </div>
-
-            <div class="modal-body">
-              <p>{state.error}</p>
-            </div>
-
-            <div class="modal-footer">
-              <button
-                  class="modal-btn primary"
-                  onClick={() => {
-                    closeErrorModal();
-                    actions.loadGames();
-                  }}
-              >
-                Попробовать снова
-              </button>
-              <button
-                  class="modal-btn"
-                  onClick={closeErrorModal}
-              >
-                Закрыть
-              </button>
-            </div>
-          </div>
-        </div>
-      </Show>
+      <Modal
+        isOpen={!!state.error}
+        title="Ошибка"
+        onClose={closeErrorModal}
+        footer={
+          <>
+            <button
+              class="modal-btn primary"
+              onClick={() => {
+                closeErrorModal();
+                actions.loadGames();
+              }}
+            >
+              Попробовать снова
+            </button>
+            <button
+              class="modal-btn"
+              onClick={closeErrorModal}
+            >
+              Закрыть
+            </button>
+          </>
+        }
+      >
+        <p>{state.error}</p>
+      </Modal>
 
       <Table
         columns={columns}

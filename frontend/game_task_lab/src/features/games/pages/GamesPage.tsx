@@ -1,6 +1,7 @@
 import "./GamesPage.css";
 import { GameList } from "../components/GameList";
 import { GameFormModal } from "../components/GameFormModal";
+import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { gameStore } from "../store/game.store.ts";
 import { createEffect, createSignal, Show } from "solid-js";
 import type { CreateGameDto, UpdateGameDto } from "../types/game.types";
@@ -9,6 +10,7 @@ export const GamesPage = () => {
   const { state, actions } = gameStore;
   const [isCreateModalOpen, setIsCreateModalOpen] = createSignal(false);
   const [isEditModalOpen, setIsEditModalOpen] = createSignal(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
 
   createEffect(() => {
     actions.loadGames();
@@ -37,12 +39,17 @@ export const GamesPage = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
     if (state.selectedGame) {
-      if (confirm(`Вы уверены, что хотите удалить игру "${state.selectedGame.title}"?`)) {
-        await actions.deleteGame(state.selectedGame.id);
-        actions.setSelectedGame(null);
-      }
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (state.selectedGame) {
+      await actions.deleteGame(state.selectedGame.id);
+      actions.setSelectedGame(null);
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -88,7 +95,7 @@ export const GamesPage = () => {
             <button
               class="games-page-action-button games-page-action-button--delete"
               type="button"
-              onClick={handleDelete}
+              onClick={handleDeleteClick}
               disabled={state.isLoading}
             >
               Удалить
@@ -126,6 +133,38 @@ export const GamesPage = () => {
         onSubmit={handleUpdate}
         isLoading={state.isLoading}
       />
+
+      <Modal
+        isOpen={isDeleteModalOpen()}
+        title="Подтверждение удаления"
+        onClose={() => setIsDeleteModalOpen(false)}
+        footer={
+          <>
+            <button
+              class="modal-btn"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={state.isLoading}
+            >
+              Отмена
+            </button>
+            <button
+              class="modal-btn danger"
+              onClick={handleDeleteConfirm}
+              disabled={state.isLoading}
+            >
+              {state.isLoading ? "Удаление..." : "Удалить"}
+            </button>
+          </>
+        }
+      >
+        <p>
+          Вы уверены, что хотите удалить игру{" "}
+          <strong>{state.selectedGame?.title}</strong>?
+        </p>
+        <p style={{ "margin-top": "0.5rem", color: "#6b7280", "font-size": "0.9rem" }}>
+          Это действие нельзя отменить.
+        </p>
+      </Modal>
     </div>
   );
 };

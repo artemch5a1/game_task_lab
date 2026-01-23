@@ -1,6 +1,6 @@
 import { createSignal, Show, createEffect } from "solid-js";
 import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types";
-import "./GameList.css";
+import { Modal } from "../../../shared/components/modal/Modal.tsx";
 
 interface GameFormModalProps {
   isOpen: boolean;
@@ -63,24 +63,35 @@ export const GameFormModal = (props: GameFormModalProps) => {
     props.onClose();
   };
 
-  return (
-    <Show when={props.isOpen}>
-      <div class="modal-overlay" onClick={handleClose}>
-        <div class="modal" onClick={(e) => e.stopPropagation()}>
-          <div class="modal-header">
-            <h3>{props.game ? "Редактировать игру" : "Создать игру"}</h3>
-            <button
-              class="modal-close"
-              onClick={handleClose}
-              aria-label="Закрыть"
-              disabled={props.isLoading}
-            >
-              ×
-            </button>
-          </div>
+  const formId = "game-form-modal";
 
-          <form onSubmit={handleSubmit}>
-            <div class="modal-body">
+  return (
+    <Modal
+      isOpen={props.isOpen}
+      title={props.game ? "Редактировать игру" : "Создать игру"}
+      onClose={handleClose}
+      footer={
+        <>
+          <button
+            type="button"
+            class="modal-btn"
+            onClick={handleClose}
+            disabled={props.isLoading}
+          >
+            Отмена
+          </button>
+          <button
+            type="submit"
+            form={formId}
+            class="modal-btn primary"
+            disabled={props.isLoading}
+          >
+            {props.isLoading ? "Сохранение..." : props.game ? "Сохранить" : "Создать"}
+          </button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit}>
               <div style={{ "margin-bottom": "1rem" }}>
                 <label style={{ display: "block", "margin-bottom": "0.5rem", "font-weight": "500" }}>
                   Название *
@@ -147,39 +158,18 @@ export const GameFormModal = (props: GameFormModalProps) => {
                   }}
                 />
               </div>
-            </div>
 
-            <Show when={error()}>
-              <div style={{
-                padding: "0 20px 10px",
-                color: "#dc3545",
-                "font-size": "0.9rem",
-                "text-align": "center",
-              }}>
-                {error()}
-              </div>
-            </Show>
-
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="modal-btn"
-                onClick={handleClose}
-                disabled={props.isLoading}
-              >
-                Отмена
-              </button>
-              <button
-                type="submit"
-                class="modal-btn primary"
-                disabled={props.isLoading}
-              >
-                {props.isLoading ? "Сохранение..." : props.game ? "Сохранить" : "Создать"}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </Show>
+              <Show when={error()}>
+                <div style={{
+                  padding: "0 0 10px",
+                  color: "#dc3545",
+                  "font-size": "0.9rem",
+                  "text-align": "center",
+                }}>
+                  {error()}
+                </div>
+              </Show>
+            </form>
+    </Modal>
   );
 };
