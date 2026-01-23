@@ -1,6 +1,7 @@
 import { createSignal, Show, createEffect } from "solid-js";
 import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
+import { FlatpickrInput } from "../../../shared/components/flatpickr/FlatpickrInput.tsx";
 
 interface GameFormModalProps {
   isOpen: boolean;
@@ -134,29 +135,24 @@ export const GameFormModal = (props: GameFormModalProps) => {
                 <label style={{ display: "block", "margin-bottom": "0.5rem", "font-weight": "500" }}>
                   Дата релиза *
                 </label>
-                <input
-                  type="date"
-                  value={releaseDate()}
-                  onInput={(e) => setReleaseDate(e.currentTarget.value)}
-                  onBlur={(e) => {
-                    // Позволяем закрыть календарь при потере фокуса
-                    e.currentTarget.blur();
-                  }}
-                  onKeyDown={(e) => {
-                    // Позволяем закрыть календарь по Escape
-                    if (e.key === "Escape") {
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  required
-                  disabled={props.isLoading}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    "border-radius": "6px",
-                    border: "1px solid #d1d5db",
-                  }}
-                />
+                <Show when={props.isOpen}>
+                  <FlatpickrInput
+                    value={releaseDate()}
+                    onChange={(date) => setReleaseDate(date)}
+                    required
+                    disabled={props.isLoading}
+                    placeholder="Выберите дату"
+                    style={{
+                      width: "100%",
+                      padding: "0.5rem",
+                      "border-radius": "6px",
+                      border: "1px solid #d1d5db",
+                      "background-color": props.isLoading ? "#f3f4f6" : "#ffffff",
+                      color: "#111827",
+                      cursor: props.isLoading ? "not-allowed" : "pointer",
+                    }}
+                  />
+                </Show>
               </div>
 
               <Show when={error()}>
