@@ -48,6 +48,15 @@
   background: #f9fafb;
 }
 
+.app-table-row--selected td {
+  background: #edf2ff !important;
+  border-color: #4b6fff;
+}
+
+.app-table-row--selected:hover td {
+  background: #dbeafe !important;
+}
+
 .app-table-message {
   padding: 1.5rem 0.75rem;
   text-align: center;

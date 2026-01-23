@@ -14,6 +14,8 @@ interface TableProps {
   data: any[];
   isLoading?: boolean;
   emptyText?: string;
+  selectedRowId?: string | null;
+  onRowClick?: (row: any) => void;
 }
 
 export const Table = (props: TableProps) => {
@@ -53,17 +55,24 @@ export const Table = (props: TableProps) => {
             }
           >
             <For each={props.data}>
-              {(row) => (
-                <tr>
-                  <For each={props.columns}>
-                    {(column) => (
-                      <td class={`app-table-cell app-table-cell--${column.align ?? "left"}`}>
-                        {column.render ? column.render(row) : (row as any)[column.key]}
-                      </td>
-                    )}
-                  </For>
-                </tr>
-              )}
+              {(row) => {
+                const isSelected = () => props.selectedRowId === row.id;
+                return (
+                  <tr
+                    class={isSelected() ? "app-table-row--selected" : ""}
+                    onClick={() => props.onRowClick?.(row)}
+                    style={{ cursor: props.onRowClick ? "pointer" : "default" }}
+                  >
+                    <For each={props.columns}>
+                      {(column) => (
+                        <td class={`app-table-cell app-table-cell--${column.align ?? "left"}`}>
+                          {column.render ? column.render(row) : (row as any)[column.key]}
+                        </td>
+                      )}
+                    </For>
+                  </tr>
+                );
+              }}
             </For>
           </Show>
         </tbody>

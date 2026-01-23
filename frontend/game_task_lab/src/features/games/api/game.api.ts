@@ -45,15 +45,27 @@ export class GameApi {
         const { games } = this.config.endpoints;
         const url = ApiHelper.buildUrl(this.config.baseURL, games.create);
 
+        // Убираем undefined поля и форматируем дату
+        const payload: any = {
+            title: dto.title,
+            releaseDate: dto.releaseDate,
+            genreId: dto.genreId,
+        };
+        
+        if (dto.description) {
+            payload.description = dto.description;
+        }
+
         const response = await fetch(url, {
             method: games.create.method,
             headers: ApiHelper.getHeaders(games.create),
-            body: JSON.stringify(dto),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error || 'Failed to create game');
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.error || errorData.message || `Failed to create game: ${response.statusText}`;
+            throw new Error(errorMessage);
         }
 
         return response.json();
@@ -64,15 +76,27 @@ export class GameApi {
         const { games } = this.config.endpoints;
         const url = ApiHelper.buildUrl(this.config.baseURL, games.update, { id });
 
+        // Убираем undefined поля и форматируем дату
+        const payload: any = {
+            title: dto.title,
+            releaseDate: dto.releaseDate,
+            genreId: dto.genreId,
+        };
+        
+        if (dto.description) {
+            payload.description = dto.description;
+        }
+
         const response = await fetch(url, {
             method: games.update.method,
             headers: ApiHelper.getHeaders(games.update),
-            body: JSON.stringify(dto),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            throw new Error(error.error || 'Failed to update game');
+            const errorData = await response.json().catch(() => ({}));
+            const errorMessage = errorData.error || errorData.message || `Failed to update game: ${response.statusText}`;
+            throw new Error(errorMessage);
         }
 
         return response.json();

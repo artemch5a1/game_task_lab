@@ -40,26 +40,6 @@ export const GameList = (gameStore: GameStore) => {
       header: "Дата релиза",
       render: (game) => formatDate(game.releaseDate),
     },
-    {
-      key: "actions",
-      header: "Действия",
-      align: "right",
-      render: (game) => (
-          <button
-              class="delete-button"
-              onClick={() => {
-                if (
-                    confirm(`Вы уверены, что хотите удалить игру "${game.title}"?`)
-                ) {
-                  gameStore.actions.deleteGame(game.id);
-                }
-              }}
-              disabled={gameStore.state.isLoading}
-          >
-            Удалить
-          </button>
-      ),
-    },
   ];
   const closeErrorModal = () => {
     gameStore.actions.setErrorNull();
@@ -111,6 +91,8 @@ export const GameList = (gameStore: GameStore) => {
         data={state.games}
         isLoading={state.isLoading}
         emptyText="Игры не найдены"
+        selectedRowId={state.selectedGame?.id ?? null}
+        onRowClick={(game) => actions.setSelectedGame(game)}
       />
     </div>
   );
