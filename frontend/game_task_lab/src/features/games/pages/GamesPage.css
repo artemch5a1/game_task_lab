@@ -46,13 +46,14 @@
 }
 
 .games-page-icon-button {
-  width: 32px;
-  height: 32px;
+  width: 100px;
   border-radius: 999px;
   border: 1px solid var(--app-border-subtle);
   background: #f6f7fb;
   cursor: pointer;
   font-size: 0.9rem;
+  align-items: center;
+  color: black;
 }
 
 .games-page-list-wrapper {

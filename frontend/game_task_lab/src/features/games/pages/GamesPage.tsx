@@ -25,12 +25,7 @@ export const GamesPage = () => {
             />
           </div>
           <div class="games-page-toolbar-right">
-            <button class="games-page-icon-button" type="button" onClick={() => { actions.loadGames(); }}>
-              ⟳
-            </button>
-            <button class="games-page-icon-button" type="button">
-              ⚙️
-            </button>
+            <button textContent={"Обновить"} class="games-page-icon-button" type="button" onClick={() => { actions.loadGames(); }}/>
           </div>
         </div>
 
