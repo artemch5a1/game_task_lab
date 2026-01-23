@@ -61,15 +61,48 @@ export const GameList = (gameStore: GameStore) => {
       ),
     },
   ];
+  const closeErrorModal = () => {
+    gameStore.actions.setErrorNull();
+  };
 
   return (
     <div class="game-list-container">
       <Show when={state.error}>
-        <div class="error-container">
-          <p class="error-message">Ошибка: {state.error}</p>
-          <button class="retry-button" onClick={() => actions.loadGames()}>
-            Попробовать снова
-          </button>
+        <div class="modal-overlay">
+          <div class="modal">
+            <div class="modal-header">
+              <h3>Ошибка</h3>
+              <button
+                  class="modal-close"
+                  onClick={closeErrorModal}
+                  aria-label="Закрыть"
+              >
+                ×
+              </button>
+            </div>
+
+            <div class="modal-body">
+              <p>{state.error}</p>
+            </div>
+
+            <div class="modal-footer">
+              <button
+                  class="modal-btn primary"
+                  onClick={() => {
+                    closeErrorModal();
+                    actions.loadGames();
+                  }}
+              >
+                Попробовать снова
+              </button>
+              <button
+                  class="modal-btn"
+                  onClick={closeErrorModal}
+              >
+                Закрыть
+              </button>
+            </div>
+          </div>
         </div>
       </Show>
 

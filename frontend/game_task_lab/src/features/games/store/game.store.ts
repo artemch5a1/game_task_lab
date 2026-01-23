@@ -23,7 +23,8 @@ export type GameStore = {
         loadGames: () => Promise<void>;
         createGame: (dto: CreateGameDto) => Promise<GameDto>;
         deleteGame: (id: string) => Promise<void>;
-        filterGames: (search: string) => Promise<void>
+        filterGames: (search: string) => Promise<void>;
+        setErrorNull: () => Promise<void>;
     };
 };
 
@@ -85,6 +86,10 @@ export const createGameStore  = () : GameStore => {
 
             setState('data', games)
             setState('games', gamesFiltered);
+        },
+        async setErrorNull(): Promise<void> {
+            setState('isLoading', false);
+            setState('error', null);
         }
     };
 
