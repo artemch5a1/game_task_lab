@@ -82,6 +82,7 @@ export const GameList = (gameStore: GameStore) => {
         emptyText="Игры не найдены"
         selectedRowId={state.selectedGame?.id ?? null}
         onRowClick={(game) => actions.setSelectedGame(game)}
+        getRowId={(game) => game.id}
       />
     </div>
   );
