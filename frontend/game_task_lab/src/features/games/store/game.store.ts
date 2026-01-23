@@ -15,7 +15,16 @@ const initialState: GameState = {
     error: null,
 };
 
-export const createGameStore = () => {
+export type GameStore = {
+    state: GameState;
+    actions: {
+        loadGames: () => Promise<void>;
+        createGame: (dto: CreateGameDto) => Promise<GameDto>;
+        deleteGame: (id: string) => Promise<void>;
+    };
+};
+
+export const createGameStore  = () : GameStore => {
     const [state, setState] = createStore(initialState);
 
     const actions = {
@@ -66,6 +75,8 @@ export const createGameStore = () => {
 
     return { state, actions };
 };
+
+
 
 // Глобальный store
 export const gameStore = createGameStore();

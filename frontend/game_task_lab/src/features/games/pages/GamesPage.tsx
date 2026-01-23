@@ -1,7 +1,16 @@
 import "./GamesPage.css";
 import { GameList } from "../components/GameList";
+import {gameStore} from "../store/game.store.ts";
+import {createEffect} from "solid-js";
 
 export const GamesPage = () => {
+
+  const { state, actions } = gameStore;
+
+  createEffect(() => {
+    actions.loadGames();
+  });
+
   return (
     <div class="games-page">
       <h1 class="games-page-title">Game List</h1>
@@ -16,7 +25,7 @@ export const GamesPage = () => {
             />
           </div>
           <div class="games-page-toolbar-right">
-            <button class="games-page-icon-button" type="button">
+            <button class="games-page-icon-button" type="button" onClick={() => { actions.loadGames(); }}>
               ⟳
             </button>
             <button class="games-page-icon-button" type="button">
@@ -26,7 +35,7 @@ export const GamesPage = () => {
         </div>
 
         <div class="games-page-list-wrapper">
-          <GameList />
+          <GameList state={state} actions={actions} />
         </div>
       </div>
     </div>
