@@ -1,12 +1,12 @@
 import "./App.css";
-import { GameList } from "./features/games/components/GameList";
+import { AppLayout } from "./layout/AppLayout";
+import { GamesPage } from "./features/games/pages/GamesPage";
 
 function App() {
   return (
-    <main class="container">
-      <h1>Игры</h1>
-      <GameList />
-    </main>
+    <AppLayout>
+      <GamesPage />
+    </AppLayout>
   );
 }
 
