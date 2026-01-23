@@ -239,12 +239,12 @@
 
 /* Окно */
 .modal {
-    background: #1e1e1e;
-    color: #fff;
+    background: #ffffff;
+    color: #111827;
     width: 100%;
     max-width: 420px;
     border-radius: 12px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
     animation: scaleIn 0.2s ease-out;
 }
 
@@ -254,12 +254,13 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-header h3 {
     margin: 0;
     font-size: 18px;
+    font-weight: 600;
 }
 
 /* Крестик */
@@ -267,18 +268,19 @@
     background: none;
     border: none;
     font-size: 22px;
-    color: #aaa;
+    color: #6b7280;
     cursor: pointer;
 }
 
 .modal-close:hover {
-    color: #fff;
+    color: #111827;
 }
 
 /* Body */
 .modal-body {
     padding: 20px;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: #374151;
 }
 
 /* Footer */
@@ -287,25 +289,27 @@
     justify-content: flex-end;
     gap: 10px;
     padding: 16px 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid #e5e7eb;
 }
 
 /* Кнопки */
 .modal-btn {
     padding: 8px 14px;
     border-radius: 6px;
-    border: none;
-    background: #3a3a3a;
-    color: #fff;
+    border: 1px solid #d1d5db;
+    background: #ffffff;
+    color: #374151;
     cursor: pointer;
 }
 
 .modal-btn:hover {
-    background: #4a4a4a;
+    background: #f3f4f6;
 }
 
 .modal-btn.primary {
     background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
 }
 
 .modal-btn.primary:hover {
