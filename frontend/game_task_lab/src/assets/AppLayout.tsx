@@ -1,6 +1,6 @@
 import type { JSX } from "solid-js";
 import "./Layout.css";
-import { Sidebar } from "./Sidebar";
+import { Sidebar } from "../shared/components/sidebar/Sidebar.tsx";
 
 interface AppLayoutProps {
   children: JSX.Element;

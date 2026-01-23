@@ -1,7 +1,7 @@
 // features/games/components/GameList.tsx
 import { createEffect, Show } from "solid-js";
 import { gameStore } from "../store/game.store";
-import { Table, type TableColumn } from "../../../components/Table";
+import { Table, type TableColumn } from "../../../shared/components/table/Table.tsx";
 import "./GameList.css";
 
 const formatDate = (dateString: string): string => {

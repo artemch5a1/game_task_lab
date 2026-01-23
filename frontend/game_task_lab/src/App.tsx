@@ -1,5 +1,5 @@
 import "./App.css";
-import { AppLayout } from "./layout/AppLayout";
+import { AppLayout } from "./assets/AppLayout.tsx";
 import { GamesPage } from "./features/games/pages/GamesPage";
 
 function App() {

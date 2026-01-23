@@ -1,4 +1,4 @@
-import "./Layout.css";
+import "../../../assets/Layout.css";
 
 export const Sidebar = () => {
   return (
