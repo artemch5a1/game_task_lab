@@ -1,6 +1,15 @@
 import "../../../assets/Layout.css";
+import { useNavigate } from "@solidjs/router";
+import { authStore } from "../../../features/auth/store/auth.store";
 
 export const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    authStore.actions.logout();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <aside class="app-sidebar">
       <div class="app-sidebar-header">
@@ -15,6 +24,13 @@ export const Sidebar = () => {
           </li>
         </ul>
       </nav>
+
+      <div class="app-sidebar-footer">
+        <button type="button" class="app-sidebar-footer-item" onClick={handleLogout}>
+          <span class="app-sidebar-icon">⎋</span>
+          <span class="app-sidebar-label">Выйти</span>
+        </button>
+      </div>
     </aside>
   );
 };
