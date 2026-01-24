@@ -6,10 +6,7 @@ import { gameStore } from "../store/game.store.ts";
 import { onMount, createSignal, Show } from "solid-js";
 import type { CreateGameDto, UpdateGameDto } from "../types/game.types";
 import { authStore } from "../../auth/store/auth.store";
-import { unityApi, type UnityStatus } from "../api/unity.api.ts";
-
-const UNITY_PATH_STORAGE_KEY = "unityExecutablePath";
-const DEFAULT_UNITY_PATH = "/traffic_light_alarm_system/Система сигнализации светофоров.x86_64";
+import { webglApi, type WebglStatus } from "../api/webgl.api.ts";
 
 export const GamesPage = () => {
   const { state, actions } = gameStore;
@@ -17,63 +14,26 @@ export const GamesPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = createSignal(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
   const isAdmin = () => authStore.actions.isAdmin();
-  const [isUnityRunning, setIsUnityRunning] = createSignal(false);
-  const [unityPid, setUnityPid] = createSignal<number | null>(null);
-  const [isUnityBusy, setIsUnityBusy] = createSignal(false);
-  const [unityError, setUnityError] = createSignal<string | null>(null);
-  const initialUnityExecutablePath = (() => {
-    try {
-      return localStorage.getItem(UNITY_PATH_STORAGE_KEY) || DEFAULT_UNITY_PATH;
-    } catch {
-      return DEFAULT_UNITY_PATH;
-    }
-  })();
-  const [unityExecutablePath, setUnityExecutablePath] =
-    createSignal<string>(initialUnityExecutablePath);
+  const [isGameBusy, setIsGameBusy] = createSignal(false);
+  const [gameError, setGameError] = createSignal<string | null>(null);
 
   onMount(() => {
     actions.loadGames();
-    unityApi
-      .status()
-      .then((s) => {
-        setIsUnityRunning(s.running);
-        setUnityPid(s.pid);
-      })
-      .catch((e) => {
-        void e;
-        // ignore: Unity feature not critical for list view
-      });
   });
 
-  const startUnity = async () => {
-    setUnityError(null);
-    setIsUnityBusy(true);
+  const startGame = async () => {
+    setGameError(null);
+    setIsGameBusy(true);
     try {
-      const status: UnityStatus = await unityApi.start(unityExecutablePath());
-      setIsUnityRunning(status.running);
-      setUnityPid(status.pid);
+      const status: WebglStatus = await webglApi.start();
+      if (!status.url) throw new Error("WebGL server did not return a URL");
+      // Load the WebGL build in the same Tauri window (no separate OS window).
+      window.location.replace(status.url);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
-      setUnityError(msg);
-      setIsUnityRunning(false);
-      setUnityPid(null);
+      setGameError(msg);
     } finally {
-      setIsUnityBusy(false);
-    }
-  };
-
-  const stopUnity = async () => {
-    setUnityError(null);
-    setIsUnityBusy(true);
-    try {
-      await unityApi.stop();
-      setIsUnityRunning(false);
-      setUnityPid(null);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      setUnityError(msg);
-    } finally {
-      setIsUnityBusy(false);
+      setIsGameBusy(false);
     }
   };
 
@@ -153,12 +113,12 @@ export const GamesPage = () => {
                 <button
                   class="games-page-action-button games-page-action-button--start"
                   type="button"
-                  disabled={state.isLoading}
+                  disabled={state.isLoading || isGameBusy()}
                   onClick={() => {
-                    startUnity();
+                    startGame();
                   }}
                 >
-                  Начать игру
+                  {isGameBusy() ? "Запуск..." : "Начать игру"}
                 </button>
               }
             >
@@ -256,68 +216,28 @@ export const GamesPage = () => {
       </Modal>
 
       <Modal
-        isOpen={isUnityRunning() || isUnityBusy() || !!unityError()}
-        title={isUnityRunning() || isUnityBusy() ? "Игра запущена" : "Не удалось запустить игру"}
+        isOpen={isGameBusy() || !!gameError()}
+        title={isGameBusy() ? "Запуск игры" : "Не удалось запустить игру"}
         onClose={() => {
-          if (!isUnityRunning() && !isUnityBusy()) setUnityError(null);
+          if (!isGameBusy()) setGameError(null);
         }}
-        showCloseButton={!isUnityRunning() && !isUnityBusy()}
-        closeOnOverlayClick={!isUnityRunning() && !isUnityBusy()}
+        showCloseButton={!isGameBusy()}
+        closeOnOverlayClick={!isGameBusy()}
         footer={
           <>
-            <Show
-              when={isUnityRunning() || isUnityBusy()}
-              fallback={
-                <>
-                  <button
-                    class="modal-btn"
-                    onClick={() => setUnityError(null)}
-                    disabled={isUnityBusy()}
-                  >
-                    Закрыть
-                  </button>
-                  <button class="modal-btn primary" onClick={startUnity} disabled={isUnityBusy()}>
-                    {isUnityBusy() ? "Запуск..." : "Попробовать снова"}
-                  </button>
-                </>
-              }
-            >
-              <button class="modal-btn danger" onClick={stopUnity} disabled={isUnityBusy()}>
-                {isUnityBusy() ? "Остановка..." : "выйти"}
-              </button>
-            </Show>
+            <button class="modal-btn" onClick={() => setGameError(null)} disabled={isGameBusy()}>
+              Закрыть
+            </button>
+            <button class="modal-btn primary" onClick={startGame} disabled={isGameBusy()}>
+              {isGameBusy() ? "Запуск..." : "Попробовать снова"}
+            </button>
           </>
         }
       >
-        <Show
-          when={isUnityRunning() || isUnityBusy()}
-          fallback={
-            <>
-              <p style={{ "margin-bottom": "0.5rem" }}>{unityError()}</p>
-              <p style={{ "margin-bottom": "0.35rem", color: "#6b7280", "font-size": "0.9rem" }}>
-                Путь к исполняемому файлу Unity:
-              </p>
-              <input
-                class="games-page-search-input"
-                type="text"
-                value={unityExecutablePath()}
-                onInput={(e) => {
-                  const v = e.target.value;
-                  setUnityExecutablePath(v);
-                  try {
-                    localStorage.setItem(UNITY_PATH_STORAGE_KEY, v);
-                  } catch {}
-                }}
-              />
-            </>
-          }
-        >
+        <Show when={isGameBusy()} fallback={<p style={{ "margin-bottom": "0.5rem" }}>{gameError()}</p>}>
           <p style={{ "margin-bottom": "0.5rem" }}>
-            Пока игра запущена, основное приложение недоступно.
+            Игра запускается. Окно приложения будет переключено на WebGL-сборку.
           </p>
-          <Show when={unityPid()}>
-            <p style={{ color: "#6b7280", "font-size": "0.9rem" }}>PID: {unityPid()}</p>
-          </Show>
         </Show>
       </Modal>
     </div>
