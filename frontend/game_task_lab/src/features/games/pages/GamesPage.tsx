@@ -5,12 +5,14 @@ import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { gameStore } from "../store/game.store.ts";
 import { onMount, createSignal, Show } from "solid-js";
 import type { CreateGameDto, UpdateGameDto } from "../types/game.types";
+import { authStore } from "../../auth/store/auth.store";
 
 export const GamesPage = () => {
   const { state, actions } = gameStore;
   const [isCreateModalOpen, setIsCreateModalOpen] = createSignal(false);
   const [isEditModalOpen, setIsEditModalOpen] = createSignal(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
+  const isAdmin = () => authStore.actions.isAdmin();
 
   onMount(() => {
     actions.loadGames();
@@ -86,22 +88,38 @@ export const GamesPage = () => {
 
         <Show when={state.selectedGame}>
           <div class="games-page-actions-bar">
-            <button
-              class="games-page-action-button games-page-action-button--edit"
-              type="button"
-              onClick={() => setIsEditModalOpen(true)}
-              disabled={state.isLoading}
+            <Show
+              when={isAdmin()}
+              fallback={
+                <button
+                  class="games-page-action-button games-page-action-button--start"
+                  type="button"
+                  disabled={state.isLoading}
+                  onClick={() => {
+                    // TODO: позже подключим запуск игры
+                  }}
+                >
+                  Начать игру
+                </button>
+              }
             >
-              Изменить
-            </button>
-            <button
-              class="games-page-action-button games-page-action-button--delete"
-              type="button"
-              onClick={handleDeleteClick}
-              disabled={state.isLoading}
-            >
-              Удалить
-            </button>
+              <button
+                class="games-page-action-button games-page-action-button--edit"
+                type="button"
+                onClick={() => setIsEditModalOpen(true)}
+                disabled={state.isLoading}
+              >
+                Изменить
+              </button>
+              <button
+                class="games-page-action-button games-page-action-button--delete"
+                type="button"
+                onClick={handleDeleteClick}
+                disabled={state.isLoading}
+              >
+                Удалить
+              </button>
+            </Show>
           </div>
         </Show>
 
@@ -109,16 +127,18 @@ export const GamesPage = () => {
           <GameList state={state} actions={actions} />
         </div>
 
-        <div class="games-page-create-button-container">
-          <button
-            class="games-page-create-button"
-            type="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            disabled={state.isLoading}
-          >
-            + Создать новую игру
-          </button>
-        </div>
+        <Show when={isAdmin()}>
+          <div class="games-page-create-button-container">
+            <button
+              class="games-page-create-button"
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              disabled={state.isLoading}
+            >
+              + Создать новую игру
+            </button>
+          </div>
+        </Show>
       </div>
 
       <GameFormModal

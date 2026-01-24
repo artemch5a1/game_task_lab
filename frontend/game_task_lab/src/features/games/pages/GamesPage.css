@@ -104,6 +104,16 @@
   background: #fee;
 }
 
+.games-page-action-button--start {
+  border-color: var(--app-primary);
+  background: var(--app-primary);
+  color: #ffffff;
+}
+
+.games-page-action-button--start:hover:not(:disabled) {
+  background: #3b5ce8;
+}
+
 .games-page-list-wrapper {
   padding: 0.5rem;
 }
