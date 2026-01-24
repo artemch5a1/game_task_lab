@@ -9,6 +9,7 @@ import (
 	jwtinfra "example/web-service-gin/internal/infrastructure/auth/jwt"
 	"example/web-service-gin/internal/infrastructure/persistence/sqlite"
 	"example/web-service-gin/internal/interfaces/http/handlers"
+	"example/web-service-gin/internal/interfaces/http/middleware"
 	"example/web-service-gin/internal/interfaces/http/router"
 
 	"github.com/gin-gonic/gin"
@@ -46,7 +47,8 @@ func Build(ctx context.Context) (*App, error) {
 	userHandler := handlers.NewUserHandler(userService)
 	authHandler := handlers.NewAuthHandler(authService)
 
-	r := router.NewRouter(gameHandler, genreHandler, userHandler, authHandler)
+	adminOnly := middleware.RequireAdmin(jwtProvider)
+	r := router.NewRouter(gameHandler, genreHandler, userHandler, authHandler, adminOnly)
 
 	return &App{
 		Router: r,

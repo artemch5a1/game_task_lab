@@ -65,3 +65,20 @@ func (p *Provider) Parse(tokenString string) (*Claims, error) {
 	return &claims, nil
 }
 
+// Verify validates token and returns userID + role.
+func (p *Provider) Verify(ctx context.Context, tokenString string) (uuid.UUID, specifictype.UserRole, error) {
+	_ = ctx
+	claims, err := p.Parse(tokenString)
+	if err != nil {
+		return uuid.Nil, "", err
+	}
+	if claims.Issuer != "" && p.issuer != "" && claims.Issuer != p.issuer {
+		return uuid.Nil, "", errors.New("invalid issuer")
+	}
+	userID, err := uuid.Parse(claims.Subject)
+	if err != nil {
+		return uuid.Nil, "", err
+	}
+	return userID, specifictype.UserRole(claims.Role), nil
+}
+
