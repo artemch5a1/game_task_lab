@@ -24,6 +24,7 @@ func NewUserHandler(userService *services.UserService) *UserHandler {
 // @Summary      Создать пользователя
 // @Description  Создает нового пользователя в системе
 // @Tags         users
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        data body dto.CreateUserDto true "Данные для создания пользователя"
@@ -104,6 +105,7 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 // @Summary      Обновить пользователя
 // @Description  Обновляет информацию о пользователе
 // @Tags         users
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID пользователя"
@@ -147,6 +149,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 // @Summary      Удалить пользователя
 // @Description  Удаляет пользователя из системы по его идентификатору
 // @Tags         users
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID пользователя"

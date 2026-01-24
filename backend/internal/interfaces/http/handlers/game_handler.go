@@ -25,6 +25,7 @@ func NewGameHandler(gameService *services.GameService) *GameHandler {
 // @Summary      Создать игру
 // @Description  Создает новую игру в системе
 // @Tags         games
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        data body dto.CreateGameDto true "Данные для создания игры"
@@ -99,6 +100,7 @@ func (h *GameHandler) GetAllGames(c *gin.Context) {
 // @Summary      Обновить игру
 // @Description  Обновляет информацию об игре
 // @Tags         games
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID игры"
@@ -136,6 +138,7 @@ func (h *GameHandler) UpdateGame(c *gin.Context) {
 // @Summary      Удалить игру
 // @Description  Удаляет игру из системы по её идентификатору
 // @Tags         games
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID игры"

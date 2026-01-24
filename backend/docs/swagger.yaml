@@ -245,6 +245,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Создать игру
       tags:
       - games
@@ -286,6 +288,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Удалить игру
       tags:
       - games
@@ -356,6 +360,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Обновить игру
       tags:
       - games
@@ -412,6 +418,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Создать жанр
       tags:
       - genres
@@ -453,6 +461,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Удалить жанр
       tags:
       - genres
@@ -523,6 +533,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Обновить жанр
       tags:
       - genres
@@ -596,6 +608,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Создать пользователя
       tags:
       - users
@@ -637,6 +651,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Удалить пользователя
       tags:
       - users
@@ -707,7 +723,15 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Обновить пользователя
       tags:
       - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: 'Введите значение заголовка целиком: "Bearer <JWT>"'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

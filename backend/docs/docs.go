@@ -112,6 +112,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Создает новую игру в системе",
                 "consumes": [
                     "application/json"
@@ -212,6 +217,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Обновляет информацию об игре",
                 "consumes": [
                     "application/json"
@@ -269,6 +279,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Удаляет игру из системы по её идентификатору",
                 "consumes": [
                     "application/json"
@@ -364,6 +379,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Создает новый жанр в системе",
                 "consumes": [
                     "application/json"
@@ -464,6 +484,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Обновляет информацию о жанре",
                 "consumes": [
                     "application/json"
@@ -521,6 +546,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Удаляет жанр из системы по его идентификатору",
                 "consumes": [
                     "application/json"
@@ -642,6 +672,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Создает нового пользователя в системе",
                 "consumes": [
                     "application/json"
@@ -742,6 +777,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Обновляет информацию о пользователе",
                 "consumes": [
                     "application/json"
@@ -799,6 +839,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Удаляет пользователя из системы по его идентификатору",
                 "consumes": [
                     "application/json"
@@ -1073,6 +1118,14 @@ const docTemplate = `{
                 "RoleUser",
                 "RoleAdmin"
             ]
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "Введите значение заголовка целиком: \"Bearer \u003cJWT\u003e\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

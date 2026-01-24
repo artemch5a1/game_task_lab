@@ -11,6 +11,11 @@ import (
 )
 
 // @title           Gin Swagger Example
+//
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @description  Введите значение заголовка целиком: "Bearer <JWT>"
 func main() {
 
 	ctx := context.Background()
