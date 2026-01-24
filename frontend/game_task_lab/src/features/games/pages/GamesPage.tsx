@@ -36,7 +36,7 @@ export const GamesPage = () => {
     unityApi
       .status()
       .then((s) => {
-        setIsUnityRunning(!!s.running);
+        setIsUnityRunning(s.running);
         setUnityPid(s.pid);
       })
       .catch((e) => {
@@ -50,7 +50,7 @@ export const GamesPage = () => {
     setIsUnityBusy(true);
     try {
       const status: UnityStatus = await unityApi.start(unityExecutablePath());
-      setIsUnityRunning(!!status.running);
+      setIsUnityRunning(status.running);
       setUnityPid(status.pid);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
@@ -66,7 +66,7 @@ export const GamesPage = () => {
     setUnityError(null);
     setIsUnityBusy(true);
     try {
-      const status: UnityStatus = await unityApi.stop();
+      await unityApi.stop();
       setIsUnityRunning(false);
       setUnityPid(null);
     } catch (e) {
