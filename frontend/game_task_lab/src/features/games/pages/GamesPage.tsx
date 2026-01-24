@@ -21,13 +21,15 @@ export const GamesPage = () => {
   const [unityPid, setUnityPid] = createSignal<number | null>(null);
   const [isUnityBusy, setIsUnityBusy] = createSignal(false);
   const [unityError, setUnityError] = createSignal<string | null>(null);
-  const [unityExecutablePath, setUnityExecutablePath] = createSignal<string>(() => {
+  const initialUnityExecutablePath = (() => {
     try {
       return localStorage.getItem(UNITY_PATH_STORAGE_KEY) || DEFAULT_UNITY_PATH;
     } catch {
       return DEFAULT_UNITY_PATH;
     }
-  });
+  })();
+  const [unityExecutablePath, setUnityExecutablePath] =
+    createSignal<string>(initialUnityExecutablePath);
 
   createEffect(() => {
     // #region agent log
