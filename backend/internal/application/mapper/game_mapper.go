@@ -47,7 +47,7 @@ func (m *GameMapper) ToGameDtoWithStats(agg *aggregate.GameDetailsAggregate) *dt
 
 func (m *GameMapper) ToGameDtoSlice(games []*model.Game) []*dto.GameDto {
 	if games == nil {
-		return nil
+		return []*dto.GameDto{}
 	}
 
 	result := make([]*dto.GameDto, len(games))

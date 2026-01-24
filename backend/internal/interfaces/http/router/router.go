@@ -9,7 +9,13 @@ import (
 	"example/web-service-gin/internal/interfaces/http/handlers"
 )
 
-func NewRouter(gameHandler *handlers.GameHandler, genreHandler *handlers.GenreHandler) *gin.Engine {
+func NewRouter(
+	gameHandler *handlers.GameHandler,
+	genreHandler *handlers.GenreHandler,
+	userHandler *handlers.UserHandler,
+	authHandler *handlers.AuthHandler,
+	adminOnly gin.HandlerFunc,
+) *gin.Engine {
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -37,17 +43,52 @@ func NewRouter(gameHandler *handlers.GameHandler, genreHandler *handlers.GenreHa
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.POST("/games", gameHandler.CreateGame)
+	if adminOnly != nil {
+		r.POST("/games", adminOnly, gameHandler.CreateGame)
+	} else {
+		r.POST("/games", gameHandler.CreateGame)
+	}
 	r.GET("/games", gameHandler.GetAllGames)
 	r.GET("/games/:id", gameHandler.GetGame)
-	r.PUT("/games/:id", gameHandler.UpdateGame)
-	r.DELETE("/games/:id", gameHandler.DeleteGame)
+	if adminOnly != nil {
+		r.PUT("/games/:id", adminOnly, gameHandler.UpdateGame)
+		r.DELETE("/games/:id", adminOnly, gameHandler.DeleteGame)
+	} else {
+		r.PUT("/games/:id", gameHandler.UpdateGame)
+		r.DELETE("/games/:id", gameHandler.DeleteGame)
+	}
 
-	r.POST("/genres", genreHandler.CreateGenre)
+	if adminOnly != nil {
+		r.POST("/genres", adminOnly, genreHandler.CreateGenre)
+	} else {
+		r.POST("/genres", genreHandler.CreateGenre)
+	}
 	r.GET("/genres", genreHandler.GetAllGenres)
 	r.GET("/genres/:id", genreHandler.GetGenre)
-	r.PUT("/genres/:id", genreHandler.UpdateGenre)
-	r.DELETE("/genres/:id", genreHandler.DeleteGenre)
+	if adminOnly != nil {
+		r.PUT("/genres/:id", adminOnly, genreHandler.UpdateGenre)
+		r.DELETE("/genres/:id", adminOnly, genreHandler.DeleteGenre)
+	} else {
+		r.PUT("/genres/:id", genreHandler.UpdateGenre)
+		r.DELETE("/genres/:id", genreHandler.DeleteGenre)
+	}
+
+	if adminOnly != nil {
+		r.POST("/users", adminOnly, userHandler.CreateUser)
+	} else {
+		r.POST("/users", userHandler.CreateUser)
+	}
+	r.GET("/users", userHandler.GetAllUsers)
+	r.GET("/users/:id", userHandler.GetUser)
+	if adminOnly != nil {
+		r.PUT("/users/:id", adminOnly, userHandler.UpdateUser)
+		r.DELETE("/users/:id", adminOnly, userHandler.DeleteUser)
+	} else {
+		r.PUT("/users/:id", userHandler.UpdateUser)
+		r.DELETE("/users/:id", userHandler.DeleteUser)
+	}
+
+	r.POST("/auth/login", authHandler.Login)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{

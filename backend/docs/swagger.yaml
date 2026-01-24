@@ -1,4 +1,9 @@
 definitions:
+  dto.AuthTokenDto:
+    properties:
+      token:
+        type: string
+    type: object
   dto.CreateGameDto:
     properties:
       description:
@@ -26,6 +31,23 @@ definitions:
     required:
     - title
     type: object
+  dto.CreateUserDto:
+    properties:
+      password:
+        maxLength: 200
+        minLength: 1
+        type: string
+      userRole:
+        $ref: '#/definitions/specifictype.UserRole'
+      username:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - password
+    - userRole
+    - username
+    type: object
   dto.GameDto:
     properties:
       description:
@@ -45,6 +67,16 @@ definitions:
         type: string
       title:
         type: string
+    type: object
+  dto.LoginDto:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
     type: object
   dto.UpdateGameDto:
     properties:
@@ -79,10 +111,87 @@ definitions:
     - id
     - title
     type: object
+  dto.UpdateUserDto:
+    properties:
+      id:
+        type: string
+      password:
+        maxLength: 200
+        minLength: 1
+        type: string
+      userRole:
+        $ref: '#/definitions/specifictype.UserRole'
+      username:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - id
+    - password
+    - userRole
+    - username
+    type: object
+  dto.UserDto:
+    properties:
+      id:
+        type: string
+      userRole:
+        $ref: '#/definitions/specifictype.UserRole'
+      username:
+        type: string
+    type: object
+  specifictype.UserRole:
+    enum:
+    - user
+    - admin
+    type: string
+    x-enum-varnames:
+    - RoleUser
+    - RoleAdmin
 info:
   contact: {}
   title: Gin Swagger Example
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Принимает логин и пароль и возвращает JWT токен
+      parameters:
+      - description: Логин и пароль
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AuthTokenDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Авторизация
+      tags:
+      - auth
   /games:
     get:
       consumes:
@@ -136,6 +245,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Создать игру
       tags:
       - games
@@ -177,6 +288,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Удалить игру
       tags:
       - games
@@ -247,6 +360,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Обновить игру
       tags:
       - games
@@ -303,6 +418,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Создать жанр
       tags:
       - genres
@@ -344,6 +461,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Удалить жанр
       tags:
       - genres
@@ -414,6 +533,8 @@ paths:
             additionalProperties:
               type: string
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Обновить жанр
       tags:
       - genres
@@ -434,4 +555,183 @@ paths:
       summary: Проверка здоровья
       tags:
       - health
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех пользователей в системе
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.UserDto'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить всех пользователей
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Создает нового пользователя в системе
+      parameters:
+      - description: Данные для создания пользователя
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.UserDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Создать пользователя
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет пользователя из системы по его идентификатору
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Удалить пользователя
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о пользователе по его идентификатору
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить пользователя
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о пользователе
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Данные для обновления пользователя
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateUserDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Обновить пользователя
+      tags:
+      - users
+securityDefinitions:
+  ApiKeyAuth:
+    description: 'Введите значение заголовка целиком: "Bearer <JWT>"'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

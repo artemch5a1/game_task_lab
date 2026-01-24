@@ -24,6 +24,7 @@ func NewGenreHandler(genreService *services.GenreService) *GenreHandler {
 // @Summary      Создать жанр
 // @Description  Создает новый жанр в системе
 // @Tags         genres
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        data body dto.CreateGenreDto true "Данные для создания жанра"
@@ -101,6 +102,7 @@ func (h *GenreHandler) GetAllGenres(c *gin.Context) {
 // @Summary      Обновить жанр
 // @Description  Обновляет информацию о жанре
 // @Tags         genres
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID жанра"
@@ -141,6 +143,7 @@ func (h *GenreHandler) UpdateGenre(c *gin.Context) {
 // @Summary      Удалить жанр
 // @Description  Удаляет жанр из системы по его идентификатору
 // @Tags         genres
+// @Security     ApiKeyAuth
 // @Accept       json
 // @Produce      json
 // @Param        id path string true "ID жанра"
