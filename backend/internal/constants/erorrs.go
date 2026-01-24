@@ -18,6 +18,13 @@ const (
 	ErrGenreNotFound   = "жанр не найден"
 	ErrGenreIDRequired = "ID жанра обязателен"
 	ErrGenreTitleEmpty = "название жанра обязательно"
+
+	ErrUserNotFound        = "пользователь не найден"
+	ErrUserIDRequired      = "ID пользователя обязателен"
+	ErrUserUsernameEmpty   = "логин обязателен"
+	ErrUserPasswordEmpty   = "пароль обязателен"
+	ErrUserRoleInvalid     = "некорректная роль пользователя"
+	ErrUserAlreadyExists   = "пользователь уже существует"
 )
 
 // Ошибки валидации

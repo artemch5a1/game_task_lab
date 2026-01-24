@@ -32,14 +32,18 @@ func Build(ctx context.Context) (*App, error) {
 
 	gameRepo := sqlite.NewGameRepository(db.SQL)
 	genreRepo := sqlite.NewGenreRepository(db.SQL)
+	userRepo := sqlite.NewUserRepository(db.SQL)
 
 	gameService := services.NewGameService(gameRepo)
 	genreService := services.NewGenreService(genreRepo)
+	userService := services.NewUserService(userRepo)
 
 	gameHandler := handlers.NewGameHandler(gameService)
 	genreHandler := handlers.NewGenreHandler(genreService)
+	userHandler := handlers.NewUserHandler(userService)
+	authHandler := handlers.NewAuthHandler(userService)
 
-	r := router.NewRouter(gameHandler, genreHandler)
+	r := router.NewRouter(gameHandler, genreHandler, userHandler, authHandler)
 
 	return &App{
 		Router: r,

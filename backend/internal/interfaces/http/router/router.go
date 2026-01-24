@@ -9,7 +9,12 @@ import (
 	"example/web-service-gin/internal/interfaces/http/handlers"
 )
 
-func NewRouter(gameHandler *handlers.GameHandler, genreHandler *handlers.GenreHandler) *gin.Engine {
+func NewRouter(
+	gameHandler *handlers.GameHandler,
+	genreHandler *handlers.GenreHandler,
+	userHandler *handlers.UserHandler,
+	authHandler *handlers.AuthHandler,
+) *gin.Engine {
 
 	gin.SetMode(gin.ReleaseMode)
 
@@ -48,6 +53,14 @@ func NewRouter(gameHandler *handlers.GameHandler, genreHandler *handlers.GenreHa
 	r.GET("/genres/:id", genreHandler.GetGenre)
 	r.PUT("/genres/:id", genreHandler.UpdateGenre)
 	r.DELETE("/genres/:id", genreHandler.DeleteGenre)
+
+	r.POST("/users", userHandler.CreateUser)
+	r.GET("/users", userHandler.GetAllUsers)
+	r.GET("/users/:id", userHandler.GetUser)
+	r.PUT("/users/:id", userHandler.UpdateUser)
+	r.DELETE("/users/:id", userHandler.DeleteUser)
+
+	r.POST("/auth/login", authHandler.Login)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
