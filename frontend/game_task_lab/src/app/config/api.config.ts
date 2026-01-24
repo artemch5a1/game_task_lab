@@ -16,6 +16,9 @@ export interface ApiConfig {
             update: ApiEndpoint;
             delete: ApiEndpoint;
         };
+        genres: {
+            list: ApiEndpoint;
+        };
     };
 }
 
@@ -44,6 +47,13 @@ export const apiEndpoints = {
         delete: {
             path: '/games/:id',
             method: 'DELETE',
+            requiresAuth: false,
+        },
+    },
+    genres: {
+        list: {
+            path: '/genres',
+            method: 'GET',
             requiresAuth: false,
         },
     },

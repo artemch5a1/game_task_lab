@@ -17,6 +17,15 @@ definitions:
     - releaseDate
     - title
     type: object
+  dto.CreateGenreDto:
+    properties:
+      title:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - title
+    type: object
   dto.GameDto:
     properties:
       description:
@@ -26,6 +35,13 @@ definitions:
       id:
         type: string
       releaseDate:
+        type: string
+      title:
+        type: string
+    type: object
+  dto.GenreDto:
+    properties:
+      id:
         type: string
       title:
         type: string
@@ -49,6 +65,18 @@ definitions:
     - genreId
     - id
     - releaseDate
+    - title
+    type: object
+  dto.UpdateGenreDto:
+    properties:
+      id:
+        type: string
+      title:
+        maxLength: 200
+        minLength: 1
+        type: string
+    required:
+    - id
     - title
     type: object
 info:
@@ -222,6 +250,173 @@ paths:
       summary: Обновить игру
       tags:
       - games
+  /genres:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех жанров в системе
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.GenreDto'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить все жанры
+      tags:
+      - genres
+    post:
+      consumes:
+      - application/json
+      description: Создает новый жанр в системе
+      parameters:
+      - description: Данные для создания жанра
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateGenreDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.GenreDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Создать жанр
+      tags:
+      - genres
+  /genres/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет жанр из системы по его идентификатору
+      parameters:
+      - description: ID жанра
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить жанр
+      tags:
+      - genres
+    get:
+      consumes:
+      - application/json
+      description: Получает информацию о жанре по его идентификатору
+      parameters:
+      - description: ID жанра
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GenreDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить жанр
+      tags:
+      - genres
+    put:
+      consumes:
+      - application/json
+      description: Обновляет информацию о жанре
+      parameters:
+      - description: ID жанра
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Данные для обновления жанра
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateGenreDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.GenreDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить жанр
+      tags:
+      - genres
   /health:
     get:
       consumes:

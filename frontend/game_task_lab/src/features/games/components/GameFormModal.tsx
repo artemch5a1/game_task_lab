@@ -1,8 +1,10 @@
-import { createSignal, Show, createEffect } from "solid-js";
+import { createSignal, Show, createEffect, For } from "solid-js";
 import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types";
 import type { GameStore } from "../store/game.store";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { FlatpickrInput } from "../../../shared/components/flatpickr/FlatpickrInput.tsx";
+import { genreApi } from "../api/genre.api";
+import type { GenreDto } from "../types/genre.types";
 
 interface GameFormModalProps {
   isOpen: boolean;
@@ -17,10 +19,46 @@ export const GameFormModal = (props: GameFormModalProps) => {
   const [title, setTitle] = createSignal("");
   const [description, setDescription] = createSignal("");
   const [releaseDate, setReleaseDate] = createSignal("");
+  const [genreId, setGenreId] = createSignal<string>("");
+  const [genres, setGenres] = createSignal<GenreDto[]>([]);
+  const [genresLoading, setGenresLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
+  const [genreSelectEl, setGenreSelectEl] = createSignal<HTMLSelectElement | null>(null);
+  const [genreDirty, setGenreDirty] = createSignal(false);
+
+  createEffect(() => {
+    if (!props.isOpen) return;
+    if (genres().length === 0) return;
+    const el = genreSelectEl();
+    if (!el) return;
+
+    const desired = props.game
+      ? (genreDirty() ? genreId() : props.game.genreId)
+      : genreId();
+
+    if (desired && el.value !== desired) {
+      el.value = desired;
+    }
+  });
 
   createEffect(() => {
     if (props.isOpen) {
+      setGenreDirty(false);
+      // Каждый раз при открытии актуализируем жанры (backend мог измениться)
+      setGenresLoading(true);
+      genreApi
+        .getAllGenres()
+        .then((list) => {
+          setGenres(list);
+        })
+        .catch((err) => {
+          setGenres([]);
+          setError(err instanceof Error ? err.message : "Не удалось загрузить жанры");
+        })
+        .finally(() => {
+          setGenresLoading(false);
+        });
+
       if (props.gameStore) {
         const consumedError = props.gameStore.actions.consumeError();
         if (consumedError) {
@@ -35,6 +73,7 @@ export const GameFormModal = (props: GameFormModalProps) => {
       if (props.game) {
         setTitle(props.game.title);
         setDescription(props.game.description ?? "");
+        setGenreId(props.game.genreId);
         setReleaseDate(
           props.game.releaseDate
             ? new Date(props.game.releaseDate).toISOString().split("T")[0]
@@ -44,6 +83,7 @@ export const GameFormModal = (props: GameFormModalProps) => {
         setTitle("");
         setDescription("");
         setReleaseDate("");
+        setGenreId("");
       }
     }
   });
@@ -53,13 +93,11 @@ export const GameFormModal = (props: GameFormModalProps) => {
     setError(null);
     
     try {
-      const genreId = props.game ? props.game.genreId : crypto.randomUUID();
-      
       const dto: CreateGameDto | UpdateGameDto = {
         title: title(),
         description: description().trim() || undefined,
         releaseDate: new Date(releaseDate()).toISOString(),
-        genreId: genreId,
+        genreId: genreId(),
         ...(props.game ? { id: props.game.id } : {}),
       };
       await props.onSubmit(dto);
@@ -168,6 +206,40 @@ export const GameFormModal = (props: GameFormModalProps) => {
                     }}
                   />
                 </Show>
+              </div>
+
+              <div style={{ "margin-bottom": "1rem" }}>
+                <label style={{ display: "block", "margin-bottom": "0.5rem", "font-weight": "500" }}>
+                  Жанр *
+                </label>
+                <select
+                  ref={(el) => setGenreSelectEl(el)}
+                  value={genreId()}
+                  onChange={(e) => {
+                    const next = e.currentTarget.value;
+                    setGenreId(next);
+                    setGenreDirty(true);
+                  }}
+                  required
+                  disabled={props.isLoading || genresLoading()}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    "border-radius": "6px",
+                    border: "1px solid #d1d5db",
+                    "background-color":
+                      props.isLoading || genresLoading() ? "#f3f4f6" : "#ffffff",
+                    color: "#111827",
+                    cursor: props.isLoading || genresLoading() ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <option value="" disabled>
+                    {genresLoading() ? "Загрузка жанров..." : "Выберите жанр"}
+                  </option>
+                  <For each={genres()}>
+                    {(g) => <option value={g.id}>{g.title}</option>}
+                  </For>
+                </select>
               </div>
 
               <Show when={error()}>

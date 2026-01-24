@@ -14,6 +14,10 @@ const (
 	ErrInvalidData         = "неверные данные"
 	ErrUnauthorized        = "неавторизованный доступ"
 	ErrForbidden           = "доступ запрещен"
+
+	ErrGenreNotFound   = "жанр не найден"
+	ErrGenreIDRequired = "ID жанра обязателен"
+	ErrGenreTitleEmpty = "название жанра обязательно"
 )
 
 // Ошибки валидации
