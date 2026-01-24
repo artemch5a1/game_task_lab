@@ -19,6 +19,9 @@ export interface ApiConfig {
         genres: {
             list: ApiEndpoint;
         };
+        auth: {
+            login: ApiEndpoint;
+        };
     };
 }
 
@@ -32,7 +35,7 @@ export const apiEndpoints = {
         create: {
             path: '/games',
             method: 'POST',
-            requiresAuth: false,
+            requiresAuth: true,
         },
         detail: {
             path: '/games/:id',
@@ -42,18 +45,25 @@ export const apiEndpoints = {
         update: {
             path: '/games/:id',
             method: 'PUT',
-            requiresAuth: false,
+            requiresAuth: true,
         },
         delete: {
             path: '/games/:id',
             method: 'DELETE',
-            requiresAuth: false,
+            requiresAuth: true,
         },
     },
     genres: {
         list: {
             path: '/genres',
             method: 'GET',
+            requiresAuth: false,
+        },
+    },
+    auth: {
+        login: {
+            path: '/auth/login',
+            method: 'POST',
             requiresAuth: false,
         },
     },
