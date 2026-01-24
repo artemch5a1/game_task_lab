@@ -3,6 +3,8 @@ import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types"
 import type { GameStore } from "../store/game.store";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { FlatpickrInput } from "../../../shared/components/flatpickr/FlatpickrInput.tsx";
+import { genreApi } from "../../genres/api/genre.api";
+import type { GenreDto } from "../../genres/types/genre.types";
 
 interface GameFormModalProps {
   isOpen: boolean;
@@ -17,10 +19,28 @@ export const GameFormModal = (props: GameFormModalProps) => {
   const [title, setTitle] = createSignal("");
   const [description, setDescription] = createSignal("");
   const [releaseDate, setReleaseDate] = createSignal("");
+  const [genreId, setGenreId] = createSignal<string>("");
+  const [genres, setGenres] = createSignal<GenreDto[]>([]);
+  const [genresLoading, setGenresLoading] = createSignal(false);
   const [error, setError] = createSignal<string | null>(null);
 
   createEffect(() => {
     if (props.isOpen) {
+      // Каждый раз при открытии актуализируем жанры (backend мог измениться)
+      setGenresLoading(true);
+      genreApi
+        .getAllGenres()
+        .then((list) => {
+          setGenres(list);
+        })
+        .catch((err) => {
+          setGenres([]);
+          setError(err instanceof Error ? err.message : "Не удалось загрузить жанры");
+        })
+        .finally(() => {
+          setGenresLoading(false);
+        });
+
       if (props.gameStore) {
         const consumedError = props.gameStore.actions.consumeError();
         if (consumedError) {
@@ -35,6 +55,7 @@ export const GameFormModal = (props: GameFormModalProps) => {
       if (props.game) {
         setTitle(props.game.title);
         setDescription(props.game.description ?? "");
+        setGenreId(props.game.genreId);
         setReleaseDate(
           props.game.releaseDate
             ? new Date(props.game.releaseDate).toISOString().split("T")[0]
@@ -44,6 +65,7 @@ export const GameFormModal = (props: GameFormModalProps) => {
         setTitle("");
         setDescription("");
         setReleaseDate("");
+        setGenreId("");
       }
     }
   });
@@ -53,13 +75,11 @@ export const GameFormModal = (props: GameFormModalProps) => {
     setError(null);
     
     try {
-      const genreId = props.game ? props.game.genreId : crypto.randomUUID();
-      
       const dto: CreateGameDto | UpdateGameDto = {
         title: title(),
         description: description().trim() || undefined,
         releaseDate: new Date(releaseDate()).toISOString(),
-        genreId: genreId,
+        genreId: genreId(),
         ...(props.game ? { id: props.game.id } : {}),
       };
       await props.onSubmit(dto);
@@ -168,6 +188,35 @@ export const GameFormModal = (props: GameFormModalProps) => {
                     }}
                   />
                 </Show>
+              </div>
+
+              <div style={{ "margin-bottom": "1rem" }}>
+                <label style={{ display: "block", "margin-bottom": "0.5rem", "font-weight": "500" }}>
+                  Жанр *
+                </label>
+                <select
+                  value={genreId()}
+                  onChange={(e) => setGenreId(e.currentTarget.value)}
+                  required
+                  disabled={props.isLoading || genresLoading()}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem",
+                    "border-radius": "6px",
+                    border: "1px solid #d1d5db",
+                    "background-color":
+                      props.isLoading || genresLoading() ? "#f3f4f6" : "#ffffff",
+                    color: "#111827",
+                    cursor: props.isLoading || genresLoading() ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <option value="" disabled>
+                    {genresLoading() ? "Загрузка жанров..." : "Выберите жанр"}
+                  </option>
+                  {genres().map((g) => (
+                    <option value={g.id}>{g.title}</option>
+                  ))}
+                </select>
               </div>
 
               <Show when={error()}>
