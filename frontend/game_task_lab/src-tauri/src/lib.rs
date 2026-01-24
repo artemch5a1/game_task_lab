@@ -6,7 +6,6 @@ fn greet(name: &str) -> String {
 
 use serde::Serialize;
 use std::{
-    fs::OpenOptions,
     path::PathBuf,
     process::{Child, Command, Stdio},
     sync::Mutex,
@@ -16,31 +15,6 @@ use tauri::State;
 
 const UNITY_EXECUTABLE_PATH: &str =
     "/traffic_light_alarm_system/Система сигнализации светофоров.x86_64";
-
-fn debug_log(hypothesis_id: &str, location: &str, message: &str, data: serde_json::Value) {
-    let payload = serde_json::json!({
-        "sessionId": "debug-session",
-        "runId": "run1",
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": (std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|_| Duration::from_millis(0))
-            .as_millis() as u64),
-    });
-
-    // Best-effort debug logging
-    if let Ok(mut f) = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open("/home/artem/Документы/GitHub/game_task_lab/.cursor/debug.log")
-    {
-        let _ = std::io::Write::write_all(&mut f, payload.to_string().as_bytes());
-        let _ = std::io::Write::write_all(&mut f, b"\n");
-    }
-}
 
 #[derive(Default)]
 struct UnityProcessState {
@@ -75,23 +49,11 @@ fn unity_status(state: State<UnityProcessState>) -> UnityStatus {
     let mut guard = state.child.lock().expect("unity process state poisoned");
     if let Some(child) = guard.as_mut() {
         let status = status_from_child(child);
-        debug_log(
-            "R1",
-            "lib.rs:unity_status",
-            "unity_status checked",
-            serde_json::json!({"running": status.running, "pid": status.pid}),
-        );
         if !status.running {
             *guard = None;
         }
         status
     } else {
-        debug_log(
-            "R1",
-            "lib.rs:unity_status",
-            "unity_status: no child",
-            serde_json::json!({}),
-        );
         UnityStatus {
             running: false,
             pid: None,
@@ -115,20 +77,7 @@ fn unity_start(state: State<UnityProcessState>, executable_path: Option<String>)
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(UNITY_EXECUTABLE_PATH));
 
-    debug_log(
-        "R2",
-        "lib.rs:unity_start",
-        "unity_start called",
-        serde_json::json!({"exec_path": exec_path.to_string_lossy()}),
-    );
-
     if !exec_path.exists() {
-        debug_log(
-            "R3",
-            "lib.rs:unity_start",
-            "exec path does not exist",
-            serde_json::json!({"exec_path": exec_path.to_string_lossy()}),
-        );
         return Err(format!(
             "Unity executable not found at path: {}",
             exec_path.to_string_lossy()
@@ -161,12 +110,6 @@ fn unity_start(state: State<UnityProcessState>, executable_path: Option<String>)
     let child = cmd.spawn().map_err(|e| format!("failed to start Unity: {e}"))?;
     let pid = child.id();
     *guard = Some(child);
-    debug_log(
-        "R2",
-        "lib.rs:unity_start",
-        "unity started",
-        serde_json::json!({"pid": pid}),
-    );
     Ok(UnityStatus {
         running: true,
         pid: Some(pid),
