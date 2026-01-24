@@ -26,7 +26,7 @@ func (m *GenreMapper) ToGenreDto(genre *model.Genre) *dto.GenreDto {
 
 func (m *GenreMapper) ToGenreDtoSlice(genres []*model.Genre) []*dto.GenreDto {
 	if genres == nil {
-		return nil
+		return []*dto.GenreDto{}
 	}
 
 	result := make([]*dto.GenreDto, len(genres))

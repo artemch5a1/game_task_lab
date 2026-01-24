@@ -29,7 +29,7 @@ func (m *UserMapper) ToUserDto(user *model.User) *dto.UserDto {
 
 func (m *UserMapper) ToUserDtoSlice(users []*model.User) []*dto.UserDto {
 	if users == nil {
-		return nil
+		return []*dto.UserDto{}
 	}
 	res := make([]*dto.UserDto, len(users))
 	for i, u := range users {
