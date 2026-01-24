@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"log"
+	"os"
 
 	_ "example/web-service-gin/docs"
 	"example/web-service-gin/internal/application/services"
-	"example/web-service-gin/internal/infrastructure/persistence/data"
-	"example/web-service-gin/internal/infrastructure/persistence/inmemory"
+	"example/web-service-gin/internal/infrastructure/persistence/sqlite"
 	"example/web-service-gin/internal/interfaces/http/handlers"
 	"example/web-service-gin/internal/interfaces/http/router"
 	"example/web-service-gin/internal/interfaces/http/server"
@@ -15,9 +16,17 @@ import (
 // @title           Gin Swagger Example
 func main() {
 
-	store := data.New()
-	gameRepo := inmemory.NewGameRepository(store)
-	genreRepo := inmemory.NewGenreRepository(store)
+	ctx := context.Background()
+	dbPath := os.Getenv("DB_PATH")
+
+	db, err := sqlite.Open(ctx, sqlite.Config{Path: dbPath})
+	if err != nil {
+		log.Fatal("DB init error:", err)
+	}
+	defer func() { _ = db.Close() }()
+
+	gameRepo := sqlite.NewGameRepository(db.SQL)
+	genreRepo := sqlite.NewGenreRepository(db.SQL)
 
 	// 3. Сервис
 	gameService := services.NewGameService(gameRepo)
