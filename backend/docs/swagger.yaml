@@ -1,4 +1,9 @@
 definitions:
+  dto.AuthTokenDto:
+    properties:
+      token:
+        type: string
+    type: object
   dto.CreateGameDto:
     properties:
       description:
@@ -151,7 +156,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Принимает логин и пароль и возвращает true/false
+      description: Принимает логин и пароль и возвращает JWT токен
       parameters:
       - description: Логин и пароль
         in: body
@@ -165,9 +170,15 @@ paths:
         "200":
           description: OK
           schema:
-            type: boolean
+            $ref: '#/definitions/dto.AuthTokenDto'
         "400":
           description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
           schema:
             additionalProperties:
               type: string

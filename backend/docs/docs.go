@@ -18,7 +18,7 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
-                "description": "Принимает логин и пароль и возвращает true/false",
+                "description": "Принимает логин и пароль и возвращает JWT токен",
                 "consumes": [
                     "application/json"
                 ],
@@ -44,11 +44,20 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "boolean"
+                            "$ref": "#/definitions/dto.AuthTokenDto"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -852,6 +861,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AuthTokenDto": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.CreateGameDto": {
             "type": "object",
             "required": [
