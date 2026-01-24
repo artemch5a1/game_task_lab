@@ -3,9 +3,9 @@ package inmemory
 import (
 	"context"
 	"errors"
-	"sync"
 
 	"example/web-service-gin/internal/application/abstraction/repository"
+	"example/web-service-gin/internal/infrastructure/persistence/data"
 	"example/web-service-gin/internal/domain/model"
 
 	"github.com/google/uuid"
@@ -16,14 +16,16 @@ var _ repository.GameRepository = (*GameRepository)(nil)
 
 // GameRepository in-memory реализация
 type GameRepository struct {
-	games map[uuid.UUID]*model.Game
-	mu    sync.RWMutex
+	data *data.Data
 }
 
 // NewGameRepository создает новый in-memory репозиторий
-func NewGameRepository() *GameRepository {
+func NewGameRepository(store *data.Data) *GameRepository {
+	if store == nil {
+		store = data.New()
+	}
 	return &GameRepository{
-		games: make(map[uuid.UUID]*model.Game),
+		data: store,
 	}
 }
 
@@ -38,16 +40,16 @@ func (r *GameRepository) Create(ctx context.Context, game *model.Game) (*model.G
 		game.ID = uuid.New()
 	}
 
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	r.data.Mu.Lock()
+	defer r.data.Mu.Unlock()
 
 	// Проверяем уникальность ID
-	if _, exists := r.games[game.ID]; exists {
+	if _, exists := r.data.Games[game.ID]; exists {
 		return nil, repository.ErrAlreadyExists
 	}
 
 	// Сохраняем
-	r.games[game.ID] = game
+	r.data.Games[game.ID] = game
 
 	return game, nil
 }
@@ -58,10 +60,10 @@ func (r *GameRepository) FindByID(ctx context.Context, id uuid.UUID) (*model.Gam
 		return nil, errors.New("game ID cannot be empty")
 	}
 
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	r.data.Mu.RLock()
+	defer r.data.Mu.RUnlock()
 
-	game, exists := r.games[id]
+	game, exists := r.data.Games[id]
 	if !exists {
 		return nil, repository.ErrNotFound
 	}
@@ -71,12 +73,12 @@ func (r *GameRepository) FindByID(ctx context.Context, id uuid.UUID) (*model.Gam
 
 // FindAll возвращает все игры с пагинацией
 func (r *GameRepository) FindAll(ctx context.Context, limit, offset int) ([]*model.Game, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	r.data.Mu.RLock()
+	defer r.data.Mu.RUnlock()
 
 	// Получаем все игры
-	allGames := make([]*model.Game, 0, len(r.games))
-	for _, game := range r.games {
+	allGames := make([]*model.Game, 0, len(r.data.Games))
+	for _, game := range r.data.Games {
 		allGames = append(allGames, game)
 	}
 
@@ -111,17 +113,17 @@ func (r *GameRepository) Update(ctx context.Context, game *model.Game) (*model.G
 		return nil, errors.New("game ID cannot be empty")
 	}
 
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	r.data.Mu.Lock()
+	defer r.data.Mu.Unlock()
 
 	// Проверяем существование
-	_, exists := r.games[game.ID]
+	_, exists := r.data.Games[game.ID]
 	if !exists {
 		return nil, repository.ErrNotFound
 	}
 
 	// Обновляем
-	r.games[game.ID] = game
+	r.data.Games[game.ID] = game
 
 	return game, nil
 }
@@ -132,17 +134,17 @@ func (r *GameRepository) Delete(ctx context.Context, id uuid.UUID) error {
 		return errors.New("game ID cannot be empty")
 	}
 
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	r.data.Mu.Lock()
+	defer r.data.Mu.Unlock()
 
 	// Проверяем существование
-	_, exists := r.games[id]
+	_, exists := r.data.Games[id]
 	if !exists {
 		return repository.ErrNotFound
 	}
 
 	// Удаляем
-	delete(r.games, id)
+	delete(r.data.Games, id)
 
 	return nil
 }
@@ -153,10 +155,10 @@ func (r *GameRepository) Exists(ctx context.Context, id uuid.UUID) (bool, error)
 		return false, errors.New("game ID cannot be empty")
 	}
 
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	r.data.Mu.RLock()
+	defer r.data.Mu.RUnlock()
 
-	_, exists := r.games[id]
+	_, exists := r.data.Games[id]
 	return exists, nil
 }
 
@@ -164,30 +166,30 @@ func (r *GameRepository) Exists(ctx context.Context, id uuid.UUID) (bool, error)
 
 // Count возвращает количество игр
 func (r *GameRepository) Count(ctx context.Context) (int, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
+	r.data.Mu.RLock()
+	defer r.data.Mu.RUnlock()
 
-	return len(r.games), nil
+	return len(r.data.Games), nil
 }
 
 // Clear очищает все данные (для тестов)
 func (r *GameRepository) Clear() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	r.data.Mu.Lock()
+	defer r.data.Mu.Unlock()
 
-	r.games = make(map[uuid.UUID]*model.Game)
+	r.data.Games = make(map[uuid.UUID]*model.Game)
 }
 
 // Seed добавляет тестовые данные
 func (r *GameRepository) Seed(games []*model.Game) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	r.data.Mu.Lock()
+	defer r.data.Mu.Unlock()
 
 	for _, game := range games {
 		if game.ID == uuid.Nil {
 			game.ID = uuid.New()
 		}
-		r.games[game.ID] = game
+		r.data.Games[game.ID] = game
 	}
 
 	return nil
