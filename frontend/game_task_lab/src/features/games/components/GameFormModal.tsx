@@ -3,8 +3,8 @@ import type { CreateGameDto, GameDto, UpdateGameDto } from "../types/game.types"
 import type { GameStore } from "../store/game.store";
 import { Modal } from "../../../shared/components/modal/Modal.tsx";
 import { FlatpickrInput } from "../../../shared/components/flatpickr/FlatpickrInput.tsx";
-import { genreApi } from "../../genres/api/genre.api";
-import type { GenreDto } from "../../genres/types/genre.types";
+import { genreApi } from "../api/genre.api";
+import type { GenreDto } from "../types/genre.types";
 
 interface GameFormModalProps {
   isOpen: boolean;
