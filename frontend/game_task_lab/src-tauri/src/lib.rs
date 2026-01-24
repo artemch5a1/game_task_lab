@@ -205,6 +205,13 @@ fn start_webgl_server(root: PathBuf) -> Result<WebglServerHandle, String> {
                 decoded.trim_start_matches('/').to_string()
             };
 
+            // Service endpoint: stop the WebGL server (best-effort) when user exits the game.
+            if rel == "__exit" {
+                let _ = request.respond(Response::empty(StatusCode(204)));
+                running_thread.store(false, Ordering::Relaxed);
+                continue;
+            }
+
             let Some(fs_path) = safe_join(&root, &rel) else {
                 let _ = request.respond(Response::empty(StatusCode(400)));
                 continue;

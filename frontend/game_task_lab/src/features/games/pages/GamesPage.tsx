@@ -28,7 +28,9 @@ export const GamesPage = () => {
       const status: WebglStatus = await webglApi.start();
       if (!status.url) throw new Error("WebGL server did not return a URL");
       // Load the WebGL build in the same Tauri window (no separate OS window).
-      window.location.replace(status.url);
+      const returnUrl = window.location.href;
+      const url = `${status.url}?return=${encodeURIComponent(returnUrl)}`;
+      window.location.replace(url);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       setGameError(msg);
