@@ -5,6 +5,11 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  username: string;
+  password: string;
+}
+
 export interface LoginResponse {
   token: string;
 }
@@ -26,6 +31,26 @@ export class AuthApi {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage =
         errorData.error || errorData.message || `Login failed: ${response.statusText}`;
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  }
+
+  async register(dto: RegisterRequest): Promise<LoginResponse> {
+    const { auth } = this.config.endpoints;
+    const url = ApiHelper.buildUrl(this.config.baseURL, auth.register);
+
+    const response = await fetch(url, {
+      method: auth.register.method,
+      headers: ApiHelper.getHeaders(auth.register),
+      body: JSON.stringify(dto),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage =
+        errorData.error || errorData.message || `Register failed: ${response.statusText}`;
       throw new Error(errorMessage);
     }
 

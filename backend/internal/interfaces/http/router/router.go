@@ -89,6 +89,7 @@ func NewRouter(
 	}
 
 	r.POST("/auth/login", authHandler.Login)
+	r.POST("/auth/register", authHandler.Register)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{

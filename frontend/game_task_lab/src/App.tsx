@@ -3,6 +3,7 @@ import { Navigate, Route, Router, useNavigate } from "@solidjs/router";
 import { AppLayout } from "./assets/AppLayout.tsx";
 import { GamesPage } from "./features/games/pages/GamesPage.tsx";
 import { LoginPage } from "./features/auth/pages/LoginPage";
+import { RegisterPage } from "./features/auth/pages/RegisterPage";
 import { authStore } from "./features/auth/store/auth.store";
 import { createEffect, Show } from "solid-js";
 
@@ -28,6 +29,11 @@ function App() {
                 authStore.actions.isAuthenticated()
                     ? <Navigate href="/" />
                     : <LoginPage />
+            )} />
+            <Route path="/register" component={() => (
+                authStore.actions.isAuthenticated()
+                    ? <Navigate href="/" />
+                    : <RegisterPage />
             )} />
             <Route path="/" component={() => (
                 <RequireAuth>

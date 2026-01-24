@@ -21,6 +21,7 @@ export interface ApiConfig {
         };
         auth: {
             login: ApiEndpoint;
+            register: ApiEndpoint;
         };
     };
 }
@@ -63,6 +64,11 @@ export const apiEndpoints = {
     auth: {
         login: {
             path: '/auth/login',
+            method: 'POST',
+            requiresAuth: false,
+        },
+        register: {
+            path: '/auth/register',
             method: 'POST',
             requiresAuth: false,
         },

@@ -19,6 +19,7 @@ export type AuthStore = {
   state: AuthState;
   actions: {
     login: (username: string, password: string) => Promise<void>;
+    register: (username: string, password: string) => Promise<void>;
     logout: () => void;
     clearError: () => void;
     isAuthenticated: () => boolean;
@@ -39,6 +40,22 @@ export const createAuthStore = (): AuthStore => {
         setState("token", token);
       } catch (e) {
         const msg = e instanceof Error ? e.message : "Login failed";
+        setState("error", msg);
+        throw e;
+      } finally {
+        setState("isLoading", false);
+      }
+    },
+    async register(username: string, password: string) {
+      setState("isLoading", true);
+      setState("error", null);
+
+      try {
+        const { token } = await authApi.register({ username, password });
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+        setState("token", token);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Register failed";
         setState("error", msg);
         throw e;
       } finally {
