@@ -9,14 +9,21 @@ interface ModalProps {
   children: JSX.Element;
   footer?: JSX.Element;
   showCloseButton?: boolean;
+  closeOnOverlayClick?: boolean;
 }
 
 export const Modal = (props: ModalProps) => {
   const showCloseButton = props.showCloseButton ?? true;
+  const closeOnOverlayClick = props.closeOnOverlayClick ?? true;
 
   return (
     <Show when={props.isOpen}>
-      <div class="modal-overlay" onClick={props.onClose}>
+      <div
+        class="modal-overlay"
+        onClick={() => {
+          if (closeOnOverlayClick) props.onClose();
+        }}
+      >
         <div class="modal" onClick={(e) => e.stopPropagation()}>
           <div class="modal-header">
             <h3>{props.title}</h3>

@@ -6,6 +6,10 @@ import { gameStore } from "../store/game.store.ts";
 import { onMount, createSignal, Show } from "solid-js";
 import type { CreateGameDto, UpdateGameDto } from "../types/game.types";
 import { authStore } from "../../auth/store/auth.store";
+import { unityApi, type UnityStatus } from "../api/unity.api.ts";
+
+const UNITY_PATH_STORAGE_KEY = "unityExecutablePath";
+const DEFAULT_UNITY_PATH = "/traffic_light_alarm_system/Система сигнализации светофоров.x86_64";
 
 export const GamesPage = () => {
   const { state, actions } = gameStore;
@@ -13,10 +17,65 @@ export const GamesPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = createSignal(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = createSignal(false);
   const isAdmin = () => authStore.actions.isAdmin();
+  const [isUnityRunning, setIsUnityRunning] = createSignal(false);
+  const [unityPid, setUnityPid] = createSignal<number | null>(null);
+  const [isUnityBusy, setIsUnityBusy] = createSignal(false);
+  const [unityError, setUnityError] = createSignal<string | null>(null);
+  const initialUnityExecutablePath = (() => {
+    try {
+      return localStorage.getItem(UNITY_PATH_STORAGE_KEY) || DEFAULT_UNITY_PATH;
+    } catch {
+      return DEFAULT_UNITY_PATH;
+    }
+  })();
+  const [unityExecutablePath, setUnityExecutablePath] =
+    createSignal<string>(initialUnityExecutablePath);
 
   onMount(() => {
     actions.loadGames();
+    unityApi
+      .status()
+      .then((s) => {
+        setIsUnityRunning(s.running);
+        setUnityPid(s.pid);
+      })
+      .catch((e) => {
+        void e;
+        // ignore: Unity feature not critical for list view
+      });
   });
+
+  const startUnity = async () => {
+    setUnityError(null);
+    setIsUnityBusy(true);
+    try {
+      const status: UnityStatus = await unityApi.start(unityExecutablePath());
+      setIsUnityRunning(status.running);
+      setUnityPid(status.pid);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setUnityError(msg);
+      setIsUnityRunning(false);
+      setUnityPid(null);
+    } finally {
+      setIsUnityBusy(false);
+    }
+  };
+
+  const stopUnity = async () => {
+    setUnityError(null);
+    setIsUnityBusy(true);
+    try {
+      await unityApi.stop();
+      setIsUnityRunning(false);
+      setUnityPid(null);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setUnityError(msg);
+    } finally {
+      setIsUnityBusy(false);
+    }
+  };
 
   const handleCreate = async (dto: CreateGameDto) => {
     try {
@@ -96,7 +155,7 @@ export const GamesPage = () => {
                   type="button"
                   disabled={state.isLoading}
                   onClick={() => {
-                    // TODO: позже подключим запуск игры
+                    startUnity();
                   }}
                 >
                   Начать игру
@@ -194,6 +253,72 @@ export const GamesPage = () => {
         <p style={{ "margin-top": "0.5rem", color: "#6b7280", "font-size": "0.9rem" }}>
           Это действие нельзя отменить.
         </p>
+      </Modal>
+
+      <Modal
+        isOpen={isUnityRunning() || isUnityBusy() || !!unityError()}
+        title={isUnityRunning() || isUnityBusy() ? "Игра запущена" : "Не удалось запустить игру"}
+        onClose={() => {
+          if (!isUnityRunning() && !isUnityBusy()) setUnityError(null);
+        }}
+        showCloseButton={!isUnityRunning() && !isUnityBusy()}
+        closeOnOverlayClick={!isUnityRunning() && !isUnityBusy()}
+        footer={
+          <>
+            <Show
+              when={isUnityRunning() || isUnityBusy()}
+              fallback={
+                <>
+                  <button
+                    class="modal-btn"
+                    onClick={() => setUnityError(null)}
+                    disabled={isUnityBusy()}
+                  >
+                    Закрыть
+                  </button>
+                  <button class="modal-btn primary" onClick={startUnity} disabled={isUnityBusy()}>
+                    {isUnityBusy() ? "Запуск..." : "Попробовать снова"}
+                  </button>
+                </>
+              }
+            >
+              <button class="modal-btn danger" onClick={stopUnity} disabled={isUnityBusy()}>
+                {isUnityBusy() ? "Остановка..." : "выйти"}
+              </button>
+            </Show>
+          </>
+        }
+      >
+        <Show
+          when={isUnityRunning() || isUnityBusy()}
+          fallback={
+            <>
+              <p style={{ "margin-bottom": "0.5rem" }}>{unityError()}</p>
+              <p style={{ "margin-bottom": "0.35rem", color: "#6b7280", "font-size": "0.9rem" }}>
+                Путь к исполняемому файлу Unity:
+              </p>
+              <input
+                class="games-page-search-input"
+                type="text"
+                value={unityExecutablePath()}
+                onInput={(e) => {
+                  const v = e.target.value;
+                  setUnityExecutablePath(v);
+                  try {
+                    localStorage.setItem(UNITY_PATH_STORAGE_KEY, v);
+                  } catch {}
+                }}
+              />
+            </>
+          }
+        >
+          <p style={{ "margin-bottom": "0.5rem" }}>
+            Пока игра запущена, основное приложение недоступно.
+          </p>
+          <Show when={unityPid()}>
+            <p style={{ color: "#6b7280", "font-size": "0.9rem" }}>PID: {unityPid()}</p>
+          </Show>
+        </Show>
       </Modal>
     </div>
   );
